@@ -84,14 +84,11 @@ Component({
       const {data} = this.data
       const {dataset} = e.currentTarget
 
-      console.log(startX)
-
       if (!startX) {
         return false
       }
 
       const curIndex = dataset.index
-      // moveStartX = 0
 
       if (data[curIndex].scale > 1) {
         const delta = transformRpx(750) + data[curIndex].x
@@ -128,21 +125,12 @@ Component({
         data[curIndex - 3].preview = false
       }
 
-      // if (curIndex > 0) {
-      //   data[curIndex].scale = 1
-      // }
-
-      // if (curIndex < data.length - 1) {
-      //   data[curIndex + 1].scale = 1
-      // }
-
       if (scrollLeft < data.length * transformRpx(750)) {
         this.setData({
           scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
           data,
           itemIndex: curIndex + 2
         })
-        // current = curIndex + 1
       }
     },
     rightScroll(curIndex) {
@@ -169,7 +157,6 @@ Component({
           data,
           itemIndex: curIndex
         })
-        // current = curIndex - 1
       }
     },
     onChange(e) {
@@ -179,9 +166,6 @@ Component({
       data[dataset.index].x = detail.x
       data[dataset.index].y = detail.y
     },
-    // htouchmove() {
-    //   return false
-    // },
     upper() {
       // console.log(e)
     },
@@ -189,9 +173,6 @@ Component({
       // console.log(e)
     },
     scroll(e) {
-      // console.log(e.detail.scrollTop)
-      // console.log(e.detail.scrollTop)
-
       scrollTop = e.detail.scrollTop
       this.changeItem()
     },
@@ -251,19 +232,6 @@ Component({
     },
     bindload(e) {
       console.log(e)
-
-      // const {url, index} = e.currentTarget.dataset
-      // const {urls} = this.data
-      // console.log(urls[index])
-      // console.log(url)
-
-      // // urls[index].src = urls[index].src.replace('_200', '_1920')
-      // // console.log(urls)
-      // this.setData({
-      //   urls
-      //   // urls: [_imgArr[index - 1]].concat(urls),
-      //   // current: 1
-      // })
     },
   }
 })
