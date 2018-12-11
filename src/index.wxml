@@ -1,0 +1,52 @@
+<view>
+  <scroll-view scroll-y style="height: 500px;" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+    <view class="photo" wx:for="{{data}}" wx:key="{{item}}" bindtap="preview" data-url="{{item.url}}">
+      <image wx:if="{{item.show}}" src="{{item.url + '_200'}}" mode="aspectFill" />
+    </view>
+  </scroll-view>
+</view>
+
+
+
+<view class="swiper" wx:if="{{previewShow}}" >
+  <view class="tool">
+    <view class="close" bindtap="close">X</view>
+    <view class="count">{{itemIndex}}/{{data.length}}</view>
+  </view>
+
+  <scroll-view scroll-x scroll-left="{{scrollLeft}}">
+    <view style="height:100%;">
+      <block wx:for="{{data}}" wx:key="{{item}}">
+        <view class="swiper-item" catchtouchstart="touchstart" catchtouchend="touchend" data-index="{{index}}">
+          <movable-area>
+          <movable-view 
+            bindchange="onChange" 
+            bindscale="onScale" 
+            x="{{item.x}}"
+            y="{{item.y}}"
+            direction="all" 
+            scale  
+            scale-min="1" 
+            scale-max="4" 
+            scale-value="{{item.scale}}"
+            animation="{{false}}"
+            data-index="{{index}}"
+          >
+            
+            <image wx:if="{{item.preview}}" src="{{item.url + '_1280'}}" lazy-load	mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}" bindload="bindload"/>
+          </movable-view>
+          </movable-area>
+        </view>
+      </block>
+    </view>
+  </scroll-view>
+ 
+  <view class="btn_group">
+    <view>查看原图</view>
+    <view>加入我的</view>
+  </view>
+</view>
+
+<cover-view class="play">
+  1222
+</cover-view>
