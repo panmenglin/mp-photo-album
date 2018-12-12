@@ -22,7 +22,7 @@ scroll-view {
   width: 100vw;
   position: fixed;
   top: 0;
-  padding: 100rpx 0 150rpx;
+  /* padding: 100rpx 0 150rpx; */
   background: #000;
   box-sizing: border-box;
   white-space: nowrap;
@@ -57,6 +57,7 @@ scroll-view {
   padding: 20rpx 40rpx;
   box-sizing: border-box;
   font-size: 28rpx;
+  z-index: 1;
 }
 
 .tool .close {
@@ -71,6 +72,10 @@ scroll-view {
 .btn_group {
   text-align: center;
   margin-top: 50rpx;
+  position: absolute;
+  z-index: 1;
+  bottom: 50rpx;
+  width: 100%;
 }
 
 .btn_group view{
