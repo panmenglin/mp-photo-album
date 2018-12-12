@@ -16,7 +16,7 @@
   <scroll-view scroll-x scroll-left="{{scrollLeft}}">
     <view style="height:100%;">
       <block wx:for="{{data}}" wx:key="{{item}}">
-        <view class="swiper-item" catchtouchstart="touchstart" catchtouchend="touchend" data-index="{{index}}">
+        <view class="swiper-item" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}">
           <movable-area>
           <movable-view 
             bindchange="onChange" 

@@ -64,7 +64,7 @@ data.data.picDoList.map(item => {
 })
 
 let startX = 0
-
+let moveStartX = 0
 let scale = false
 
 Component({
@@ -97,6 +97,7 @@ Component({
       if (e.touches.length === 1) {
         const {pageX} = e.touches[0]
         startX = pageX
+        moveStartX = pageX
       }
     },
     touchend(e) {
@@ -134,6 +135,7 @@ Component({
       }
 
       startX = 0
+      moveStartX = 0
       return true
     },
     leftScroll(curIndex) {
@@ -186,6 +188,89 @@ Component({
         })
       }
     },
+    touchmove(e) {
+      console.log(e)
+
+
+      if (scale) {
+        setTimeout(() => {
+          scale = false
+        }, 1000)
+        return false
+      }
+
+
+      const {pageX} = e.changedTouches[0]
+      const {data} = this.data
+      const {dataset} = e.currentTarget
+
+      if (!moveStartX) {
+        return false
+      }
+
+      if (e.touches.length > 1) {
+        return false
+      }
+
+      const curIndex = dataset.index
+
+      if (data[curIndex].scale > 1) {
+        const delta = transformRpx(750) + data[curIndex].x
+        if (delta > 20 && delta < transformRpx(750) - 20) {
+          return false
+        }
+      }
+
+      if (moveStartX < pageX) {
+        // 右滑
+        this.moveRight(e)
+      } else if (moveStartX > pageX) {
+        // 左滑
+        this.moveLeft(e)
+      }
+
+
+      moveStartX = pageX
+      return true
+    },
+    moveLeft(e) {
+      const {pageX} = e.touches[0]
+      const {dataset} = e.currentTarget
+      const {scrollLeft, data} = this.data
+
+      if (data[dataset.index].scale > 1) {
+        const delta = transformRpx(750) + data[dataset.index].x
+        if (delta > 20) {
+          return false
+        }
+      }
+
+      if (scrollLeft < data.length * transformRpx(750)) {
+        this.setData({
+          scrollLeft: scrollLeft + (moveStartX - pageX),
+        })
+      }
+      return true
+    },
+    moveRight(e) {
+      const {pageX} = e.touches[0]
+      const {dataset} = e.currentTarget
+      const {scrollLeft, data} = this.data
+
+      if (data[dataset.index].scale > 1) {
+        const delta = transformRpx(750) + data[dataset.index].x
+        if (delta < transformRpx(750) - 20) {
+          return false
+        }
+      }
+
+      if (scrollLeft > 0) {
+        this.setData({
+          scrollLeft: scrollLeft - (pageX - moveStartX),
+        })
+      }
+      return true
+    },
     onChange(e) {
       const {dataset} = e.currentTarget
       const {detail} = e
@@ -204,8 +289,6 @@ Component({
       this.changeItem()
     },
     changeItem: debounce(function () {
-      console.log(this)
-
       const {data} = this.data
       const minConlum = (Math.floor(scrollTop / imgHeight) - 2) * 3
       const maxConlum = minConlum + 8 * 3
@@ -245,6 +328,10 @@ Component({
       data[index].preview = true
       data[index + 1].preview = true
       data[index + 2].preview = true
+
+      if (data[index - 1]) {
+        data[index - 1].preview = true
+      }
 
 
       this.setData({
