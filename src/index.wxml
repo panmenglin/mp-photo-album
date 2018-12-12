@@ -1,11 +1,10 @@
 <view>
   <scroll-view scroll-y style="height: 500px;" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-    <view class="photo" wx:for="{{data}}" wx:key="{{item}}" bindtap="preview" data-url="{{item.url}}">
-      <image wx:if="{{item.show}}" src="{{item.url + '_200'}}" mode="aspectFill" />
+    <view class="photo" wx:for="{{data}}" wx:key="{{item}}" bindtap="preview" data-url="{{item.src}}">
+      <image wx:if="{{item.show}}" src="{{item.listSrc}}" mode="aspectFill" />
     </view>
   </scroll-view>
 </view>
-
 
 <view class="swiper" wx:if="{{previewShow}}" >
   <view class="tool">
@@ -15,26 +14,26 @@
 
   <scroll-view scroll-x scroll-left="{{scrollLeft}}" scroll-with-animation>
     <view style="height:100%;">
-      <block wx:for="{{data}}" wx:key="{{item}}">
+      <block wx:for="{{previewData}}" wx:key="{{item}}">
         <view class="swiper-item" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}" >
           <movable-area>
-          <movable-view 
-            bindchange="onChange" 
-            bindscale="onScale" 
-            x="{{item.x}}"
-            y="{{item.y}}"
-            direction="all" 
-            scale  
-            scale-min="1" 
-            scale-max="4" 
-            scale-value="{{item.scale}}"
-            animation="{{false}}"
-            data-index="{{index}}"
-            disabled="{{item.disabled}}"
-          >
-            
-            <image bindtap="scalee" wx:if="{{item.preview}}" src="{{item.url + '_1280'}}" lazy-load	mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}" bindload="bindload"/>
-          </movable-view>
+            <movable-view 
+              bindchange="onChange" 
+              bindscale="onScale" 
+              x="{{item.x}}"
+              y="{{item.y}}"
+              direction="all" 
+              scale  
+              scale-min="1" 
+              scale-max="4" 
+              scale-value="{{item.scale}}"
+              animation="{{false}}"
+              data-index="{{index}}"
+              disabled="{{itemIndex !== index + 1}}"
+            >
+              <!-- <image wx:if="{{item.preview}}" src="{{item.previewSrc}}" lazy-load	mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/> -->
+              <image src="{{item.previewSrc}}" lazy-load	mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/>
+            </movable-view>
           </movable-area>
         </view>
       </block>
@@ -46,7 +45,3 @@
     <view>加入我的</view>
   </view>
 </view>
-
-<cover-view class="play">
-  1222
-</cover-view>
