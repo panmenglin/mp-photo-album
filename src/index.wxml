@@ -29,8 +29,9 @@
               scale-value="{{item.scale}}"
               animation="{{false}}"
               data-index="{{index}}"
-              disabled="{{itemIndex !== index + 1}}"
+              disabled="{{item.disabled}}"
             >
+              <!-- disabled="{{itemIndex !== item.index + 1 || item.disabled}}" -->
               <!-- <image wx:if="{{item.preview}}" src="{{item.previewSrc}}" lazy-load	mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/> -->
               <image src="{{curSrc || item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/>
             </movable-view>

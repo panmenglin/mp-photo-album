@@ -6,9 +6,15 @@ const imgHeight = transformRpx(248)
 
 let scrollTop = 0 // 照片墙滚动高度
 let startX = 0 // touch 事件起始 x 坐标
+let startY = 0 // touch 事件起始 x 坐标
 let moveStartX = 0 // move 事件起始 x 坐标
 let scale = false // 是否缩放中
 const interval = [-2, -1, 0, 1, 2]
+let curScale = 1
+const move = {
+  x: 0,
+  y: 0
+}
 
 Component({
   properties: {
@@ -29,64 +35,87 @@ Component({
     curSrc: ''
   },
   ready() {
+    const {list} = this.properties
+    list.map((item, index) => {
+      item.index = index
+      item.scale = 1
+      return true
+    })
     this.setData({
-      data: this.properties.list
+      data: list
     })
     this.changeItem()
   },
   methods: {
     // 标记缩放
     onScale(e) {
-      const {dataset} = e.currentTarget
       const {detail} = e
-      const {data} = this.data
-      data[dataset.index].scale = detail.scales
+      curScale = detail.scale
+      move.x = detail.x
+      move.y = detail.y
       scale = true
     },
-    // scalee(e) {
-    //   const {dataset} = e.currentTarget
-    //   const {data} = this.data
-    //   data[dataset.index].scale = 2
-    //   this.setData({
-    //     data
-    //   })
-    // },
     touchstart(e) {
       if (e.touches.length === 1) {
-        const {pageX} = e.touches[0]
+        const {pageX, pageY} = e.touches[0]
         startX = pageX
+        startY = pageY
         moveStartX = pageX
       }
     },
-    touchend(e) {
-      if (scale) {
-        setTimeout(() => {
-          scale = false
-        }, 1000)
-        return false
-      }
-
-      const {pageX} = e.changedTouches[0]
-      const {data} = this.data
-      const {dataset} = e.currentTarget
-
+    touchVerify(startX, startY, pageX, pageY) {
       if (!startX) {
         return false
       }
 
+      if (Math.abs(startY - pageY) > Math.abs(startX - pageX)) {
+        return false
+      }
+
+      return true
+    },
+    touchend(e) {
+      const {pageX, pageY} = e.changedTouches[0]
+      const {previewData} = this.data
+      const {dataset} = e.currentTarget
       const curIndex = dataset.index
 
-      if (data[curIndex].scale > 1) {
-        const delta = transformRpx(750) + data[curIndex].x
+      if (scale) {
+        setTimeout(() => {
+          scale = false
+        }, 1000)
+        previewData[curIndex].disabled = false
+        previewData[curIndex].scale = curScale
+        previewData[curIndex].x = move.x
+        previewData[curIndex].y = move.y
+        this.setData({
+          previewData
+        })
+        return false
+      }
+
+      previewData[curIndex].x = move.x
+      previewData[curIndex].y = move.y
+
+      this.setData({
+        previewData
+      })
+
+      if (!this.touchVerify(startX, startY, pageX, pageY)) {
+        return false
+      }
+
+      if (previewData[curIndex].scale > 1) {
+        const delta = transformRpx(750) + previewData[curIndex].x
         if (delta > 20 && delta < transformRpx(750) - 20) {
           return false
         }
       }
 
-      if (startX < pageX && pageX - startX > 30) {
+      if (startX < pageX && pageX - startX > 50) {
       // 右滑
         this.rightScroll(curIndex)
-      } else if (startX > pageX && startX - pageX > 30) {
+      } else if (startX > pageX && startX - pageX > 50) {
       // 左滑
         this.leftScroll(curIndex)
       }
@@ -98,9 +127,9 @@ Component({
     leftScroll(curIndex) {
       const {scrollLeft, data, previewData} = this.data
       const {itemIndex} = this.data
-      if (data[curIndex].scale > 1) {
-        const delta = transformRpx(750) + data[curIndex].x
-        if (delta > 20) {
+      if (previewData[curIndex].scale > 1) {
+        const delta = transformRpx(750) + previewData[curIndex].x
+        if (delta > 0) {
           return false
         }
       }
@@ -110,13 +139,16 @@ Component({
       }
 
       if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
-        data[curIndex].disabled = false
-
+        previewData[curIndex].disabled = false
+        previewData[curIndex].scale = 1
+        previewData[curIndex].x = 0
+        previewData[curIndex].y = 0
         this.setData({
           scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
-          data,
+          // data,
           previewData,
-          itemIndex: itemIndex + 1
+          itemIndex: itemIndex + 1,
+          curIndex
         })
       } else {
         this.setData({
@@ -129,18 +161,22 @@ Component({
     rightScroll(curIndex) {
       const {scrollLeft, data, previewData} = this.data
       const {itemIndex} = this.data
-      if (data[curIndex].scale > 1) {
-        const delta = transformRpx(750) + data[curIndex].x
-        if (delta < transformRpx(750) - 20) {
+      if (previewData[curIndex].scale > 1) {
+        const delta = transformRpx(750) + previewData[curIndex].x
+        if (delta < transformRpx(750)) {
           return false
         }
       }
 
       if (scrollLeft > 0) {
-        data[curIndex].disabled = false
+        previewData[curIndex].disabled = false
+        previewData[curIndex].scale = 1
+        previewData[curIndex].x = 0
+        previewData[curIndex].y = 0
         this.setData({
           scrollLeft: curIndex * transformRpx(750) - transformRpx(750),
-          data,
+          // data,
+          previewData,
           itemIndex: itemIndex - 1,
           animation: false,
         })
@@ -175,19 +211,19 @@ Component({
       return true
     },
     touchmove(e) {
+      const {pageX, pageY} = e.changedTouches[0]
+      const {previewData} = this.data
+      const {dataset} = e.currentTarget
+
       if (scale) {
-        setTimeout(() => {
-          scale = false
-        }, 1000)
         return false
       }
 
-
-      const {pageX} = e.changedTouches[0]
-      const {data} = this.data
-      const {dataset} = e.currentTarget
-
       if (!moveStartX) {
+        return false
+      }
+
+      if (!this.touchVerify(startX, startY, pageX, pageY)) {
         return false
       }
 
@@ -197,8 +233,8 @@ Component({
 
       const curIndex = dataset.index
 
-      if (data[curIndex].scale > 1) {
-        const delta = transformRpx(750) + data[curIndex].x
+      if (previewData[curIndex].scale > 1) {
+        const delta = transformRpx(750) + previewData[curIndex].x
         if (delta > 20 && delta < transformRpx(750) - 20) {
           return false
         }
@@ -219,20 +255,20 @@ Component({
     moveLeft(e) {
       const {pageX} = e.touches[0]
       const {dataset} = e.currentTarget
-      const {scrollLeft, data} = this.data
+      const {scrollLeft, previewData} = this.data
 
-      if (data[dataset.index].scale > 1) {
-        const delta = transformRpx(750) + data[dataset.index].x
+      if (previewData[dataset.index].scale > 1) {
+        const delta = transformRpx(750) + previewData[dataset.index].x
         if (delta > 0) {
           return false
         }
       }
 
-      if (scrollLeft < (data.length - 1) * transformRpx(750)) {
-        data[dataset.index].disabled = true
+      if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
+        previewData[dataset.index].disabled = true
         this.setData({
           scrollLeft: scrollLeft + (moveStartX - pageX),
-          data,
+          previewData,
         })
       }
       return true
@@ -240,36 +276,28 @@ Component({
     moveRight(e) {
       const {pageX} = e.touches[0]
       const {dataset} = e.currentTarget
-      const {scrollLeft, data} = this.data
+      const {scrollLeft, previewData} = this.data
 
-      if (data[dataset.index].scale > 1) {
-        const delta = transformRpx(750) + data[dataset.index].x
+      if (previewData[dataset.index].scale > 1) {
+        const delta = transformRpx(750) + previewData[dataset.index].x
         if (delta < transformRpx(750)) {
           return false
         }
       }
 
       if (scrollLeft > 0) {
-        data[dataset.index].disabled = true
+        previewData[dataset.index].disabled = true
         this.setData({
           scrollLeft: scrollLeft - (pageX - moveStartX),
-          data
+          previewData
         })
       }
       return true
     },
     onChange(e) {
-      const {dataset} = e.currentTarget
       const {detail} = e
-      const {data} = this.data
-      data[dataset.index].x = detail.x
-      data[dataset.index].y = detail.y
-    },
-    upper() {
-      // console.log(e)
-    },
-    lower() {
-      // console.log(e)
+      move.x = detail.x
+      move.y = detail.y
     },
     scroll(e) {
       scrollTop = e.detail.scrollTop
