@@ -89,4 +89,6 @@ scroll-view {
   width: 100%;
   white-space: nowrap;
   display: inline-block;
+  position: relative;
+  background: #000;
 }

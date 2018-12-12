@@ -6,6 +6,7 @@ const list = data.data.picDoList.map(item => ({
   listSrc: `${item.url}_200`,
 }))
 
+
 Page({
   data: {
     list,

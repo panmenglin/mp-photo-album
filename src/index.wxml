@@ -12,10 +12,10 @@
     <view class="count">{{itemIndex}}/{{data.length}}</view>
   </view>
 
-  <scroll-view scroll-x scroll-left="{{scrollLeft}}" scroll-with-animation>
-    <view style="height:100%;">
+  <scroll-view scroll-x scroll-left="{{scrollLeft}}" scroll-with-animation="{{animation}}">
+    <view style="height:100%;transform: translateX({{translateX}}px)">
       <block wx:for="{{previewData}}" wx:key="{{item}}">
-        <view class="swiper-item" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}" >
+        <view class="swiper-item" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}">
           <movable-area>
             <movable-view 
               bindchange="onChange" 
@@ -32,7 +32,7 @@
               disabled="{{itemIndex !== index + 1}}"
             >
               <!-- <image wx:if="{{item.preview}}" src="{{item.previewSrc}}" lazy-load	mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/> -->
-              <image src="{{item.previewSrc}}" lazy-load	mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/>
+              <image src="{{curSrc || item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/>
             </movable-view>
           </movable-area>
         </view>

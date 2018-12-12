@@ -23,7 +23,10 @@ Component({
     scrollLeft: 0, // 预览图滚动距离
     x: 0,
     y: 0,
-    previewData: []
+    previewData: [],
+    animation: true, // 滚动动画
+    translateX: 0,
+    curSrc: ''
   },
   ready() {
     this.setData({
@@ -93,7 +96,8 @@ Component({
       return true
     },
     leftScroll(curIndex) {
-      const {scrollLeft, data} = this.data
+      const {scrollLeft, data, previewData} = this.data
+      const {itemIndex} = this.data
       if (data[curIndex].scale > 1) {
         const delta = transformRpx(750) + data[curIndex].x
         if (delta > 20) {
@@ -101,19 +105,21 @@ Component({
         }
       }
 
+      console.log(itemIndex)
+      previewData.push(data[itemIndex + 2])
 
-      if (data[curIndex]) {
-        data[curIndex].preview = true
-      }
-      if (data[curIndex + 1]) {
-        data[curIndex + 1].preview = true
-      }
-      if (data[curIndex + 2]) {
-        data[curIndex + 2].preview = true
-      }
-      if (data[curIndex - 3]) {
-        data[curIndex - 3].preview = false
-      }
+      // if (data[curIndex]) {
+      //   data[curIndex].preview = true
+      // }
+      // if (data[curIndex + 1]) {
+      //   data[curIndex + 1].preview = true
+      // }
+      // if (data[curIndex + 2]) {
+      //   data[curIndex + 2].preview = true
+      // }
+      // if (data[curIndex - 3]) {
+      //   data[curIndex - 3].preview = false
+      // }
 
       if (scrollLeft < (data.length - 1) * transformRpx(750)) {
         data[curIndex].disabled = false
@@ -121,7 +127,8 @@ Component({
         this.setData({
           scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
           data,
-          itemIndex: curIndex + 2
+          previewData,
+          itemIndex: itemIndex + 1
         })
       } else {
         this.setData({
@@ -132,7 +139,8 @@ Component({
       return true
     },
     rightScroll(curIndex) {
-      const {scrollLeft, data} = this.data
+      const {scrollLeft, data, previewData} = this.data
+      const {itemIndex} = this.data
       if (data[curIndex].scale > 1) {
         const delta = transformRpx(750) + data[curIndex].x
         if (delta < transformRpx(750) - 20) {
@@ -140,29 +148,46 @@ Component({
         }
       }
 
-      if (data[curIndex]) {
-        data[curIndex].preview = true
-      }
-
-      if (data[curIndex - 1]) {
-        data[curIndex - 1].preview = true
-      }
-
-      if (data[curIndex - 2]) {
-        data[curIndex - 2].preview = true
-      }
-
-      if (data[curIndex + 3]) {
-        data[curIndex + 3].preview = false
-      }
+      console.log(scrollLeft)
 
       if (scrollLeft > 0) {
         data[curIndex].disabled = false
         this.setData({
           scrollLeft: curIndex * transformRpx(750) - transformRpx(750),
           data,
-          itemIndex: curIndex
+          itemIndex: itemIndex - 1,
+          animation: false,
         })
+
+        setTimeout(() => {
+          if (previewData[curIndex - 1]) {
+            const curSrc = previewData[curIndex - 1].previewSrc
+            this.setData({
+              curSrc
+            })
+          }
+        }, 500)
+
+        setTimeout(() => {
+          if (this.data.curSrc) {
+            console.log(data[itemIndex - 4])
+            console.log(previewData)
+            if (data[itemIndex - 4]) {
+              console.log(1)
+
+              previewData.splice(0, 0, data[itemIndex - 4])
+              this.setData({
+                previewData,
+                scrollLeft: curIndex * transformRpx(750),
+              })
+            }
+
+            this.setData({
+              curSrc: '',
+              animation: true,
+            })
+          }
+        }, 700)
       }
 
       return true
@@ -289,22 +314,21 @@ Component({
 
       const index = data.findIndex((value) => value.src === url)
 
-      const previewData = interval.map(item => data[index + item])
+      const previewData = []
+      interval.map(item => {
+        if (data[index + item]) {
+          previewData.push(data[index + item])
+        }
+        return true
+      })
 
-      // data[index].preview = true
-      // data[index + 1].preview = true
-      // data[index + 2].preview = true
-
-      // if (data[index - 1]) {
-      //   data[index - 1].preview = true
-      // }
-
+      const scrollIndex = previewData.findIndex((value) => value.src === url)
 
       this.setData({
         data,
         previewData,
         // scrollLeft: index * transformRpx(750),
-        scrollLeft: 2 * transformRpx(750),
+        scrollLeft: scrollIndex * transformRpx(750),
         previewShow: true,
         itemIndex: index + 1
       })
