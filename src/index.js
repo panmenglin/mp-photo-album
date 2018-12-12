@@ -105,23 +105,11 @@ Component({
         }
       }
 
-      console.log(itemIndex)
-      previewData.push(data[itemIndex + 2])
+      if (data[itemIndex + 2]) {
+        previewData.push(data[itemIndex + 2])
+      }
 
-      // if (data[curIndex]) {
-      //   data[curIndex].preview = true
-      // }
-      // if (data[curIndex + 1]) {
-      //   data[curIndex + 1].preview = true
-      // }
-      // if (data[curIndex + 2]) {
-      //   data[curIndex + 2].preview = true
-      // }
-      // if (data[curIndex - 3]) {
-      //   data[curIndex - 3].preview = false
-      // }
-
-      if (scrollLeft < (data.length - 1) * transformRpx(750)) {
+      if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
         data[curIndex].disabled = false
 
         this.setData({
@@ -148,8 +136,6 @@ Component({
         }
       }
 
-      console.log(scrollLeft)
-
       if (scrollLeft > 0) {
         data[curIndex].disabled = false
         this.setData({
@@ -170,11 +156,7 @@ Component({
 
         setTimeout(() => {
           if (this.data.curSrc) {
-            console.log(data[itemIndex - 4])
-            console.log(previewData)
             if (data[itemIndex - 4]) {
-              console.log(1)
-
               previewData.splice(0, 0, data[itemIndex - 4])
               this.setData({
                 previewData,
@@ -327,7 +309,6 @@ Component({
       this.setData({
         data,
         previewData,
-        // scrollLeft: index * transformRpx(750),
         scrollLeft: scrollIndex * transformRpx(750),
         previewShow: true,
         itemIndex: index + 1
@@ -337,8 +318,6 @@ Component({
       this.setData({
         previewShow: false
       })
-    },
-    // bindload(e) {
-    // },
+    }
   }
 })
