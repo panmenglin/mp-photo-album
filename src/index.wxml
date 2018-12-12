@@ -7,7 +7,6 @@
 </view>
 
 
-
 <view class="swiper" wx:if="{{previewShow}}" >
   <view class="tool">
     <view class="close" bindtap="close">X</view>
