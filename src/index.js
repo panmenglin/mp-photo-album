@@ -15,6 +15,8 @@ const move = {
   x: 0,
   y: 0
 }
+let moving = false
+
 
 Component({
   properties: {
@@ -56,11 +58,12 @@ Component({
       scale = true
     },
     touchstart(e) {
-      if (e.touches.length === 1) {
+      if (e.touches.length === 1 && !moving) {
         const {pageX, pageY} = e.touches[0]
         startX = pageX
         startY = pageY
         moveStartX = pageX
+        moving = true
       }
     },
     touchVerify(startX, startY, pageX, pageY) {
@@ -91,6 +94,7 @@ Component({
         this.setData({
           previewData
         })
+        moving = false
         return false
       }
 
@@ -102,12 +106,14 @@ Component({
       })
 
       if (!this.touchVerify(startX, startY, pageX, pageY)) {
+        moving = false
         return false
       }
 
       if (previewData[curIndex].scale > 1) {
         const delta = transformRpx(750) + previewData[curIndex].x
         if (delta > 20 && delta < transformRpx(750) - 20) {
+          moving = false
           return false
         }
       }
@@ -118,6 +124,13 @@ Component({
       } else if (startX > pageX && startX - pageX > 50) {
       // 左滑
         this.leftScroll(curIndex)
+      } else {
+        setTimeout(() => {
+          this.setData({
+            scrollLeft: curIndex * transformRpx(750),
+          })
+          moving = false
+        }, 500)
       }
 
       startX = 0
@@ -135,7 +148,17 @@ Component({
       }
 
       if (data[itemIndex + 2]) {
-        previewData.push(data[itemIndex + 2])
+        let insert = false
+        previewData.map(item => {
+          if (item.src === data[itemIndex + 2].src) {
+            insert = true
+          }
+          return true
+        })
+
+        if (!insert) {
+          previewData.push(data[itemIndex + 2])
+        }
       }
 
       if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
@@ -144,9 +167,9 @@ Component({
         previewData[curIndex].x = 0
         previewData[curIndex].y = 0
         this.setData({
+          previewData,
           scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
           // data,
-          previewData,
           itemIndex: itemIndex + 1,
           curIndex
         })
@@ -156,6 +179,7 @@ Component({
         })
       }
 
+      moving = false
       return true
     },
     rightScroll(curIndex) {
@@ -164,6 +188,7 @@ Component({
       if (previewData[curIndex].scale > 1) {
         const delta = transformRpx(750) + previewData[curIndex].x
         if (delta < transformRpx(750)) {
+          moving = false
           return false
         }
       }
@@ -193,11 +218,21 @@ Component({
         setTimeout(() => {
           if (this.data.curSrc) {
             if (data[itemIndex - 4]) {
-              previewData.splice(0, 0, data[itemIndex - 4])
-              this.setData({
-                previewData,
-                scrollLeft: curIndex * transformRpx(750),
+              let insert = false
+              previewData.map(item => {
+                if (item.src === data[itemIndex - 4].src) {
+                  insert = true
+                }
+                return true
               })
+
+              if (!insert) {
+                previewData.splice(0, 0, data[itemIndex - 4])
+                this.setData({
+                  previewData,
+                  scrollLeft: curIndex * transformRpx(750),
+                })
+              }
             }
 
             this.setData({
@@ -205,7 +240,10 @@ Component({
               animation: true,
             })
           }
+          moving = false
         }, 700)
+      } else {
+        moving = false
       }
 
       return true
