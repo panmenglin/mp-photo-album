@@ -34,7 +34,7 @@ Component({
     x: 0,
     y: 0,
     previewData: [],
-    animation: true, // 滚动动画
+    animation: false, // 滚动动画
     curSrc: '',
     lastTapTime: 0,
     curIndex: 0,
@@ -53,23 +53,14 @@ Component({
     this.changeItem()
   },
   methods: {
+    // 双击还原缩放
     doubleClick(e) {
       const {timeStamp} = e
       const {dataset} = e.currentTarget
-      const {previewData} = this.data
-
       if (timeStamp - dataset.time > 0) {
         if (timeStamp - dataset.time < 300) {
-          if (previewData[dataset.index].scale > 1) {
-            previewData[dataset.index].scale = 1
-            previewData[dataset.index].x = 0
-            previewData[dataset.index].y = 0
-          } else {
-            // previewData[dataset.index].scale = 2
-          }
-
           this.setData({
-            previewData
+            initScale: true
           })
         }
       }
@@ -80,9 +71,6 @@ Component({
     // 标记缩放
     onScale(e) {
       const {detail} = e
-      // curScale = detail.scale
-      // move.x = detail.x
-      // move.y = detail.y
       curItem.scale = detail.scale
       curItem.x = detail.x
       curItem.y = detail.y
@@ -110,31 +98,18 @@ Component({
     },
     touchend(e) {
       const {pageX, pageY} = e.changedTouches[0]
-      const {previewData} = this.data
+      // const {previewData} = this.data
       const {dataset} = e.currentTarget
       const curIndex = dataset.index
 
       if (scale) {
         setTimeout(() => {
           scale = false
-        }, 1000)
-        previewData[curIndex].disabled = false
-        // previewData[curIndex].scale = curScale
-        // previewData[curIndex].x = move.x
-        // previewData[curIndex].y = move.y
-        this.setData({
-          previewData
-        })
+        }, 500)
+
         moving = false
         return false
       }
-
-      // previewData[curIndex].x = move.x
-      // previewData[curIndex].y = move.y
-
-      // this.setData({
-      //   previewData
-      // })
 
       if (!this.touchVerify(startX, startY, pageX, pageY)) {
         moving = false
@@ -194,10 +169,6 @@ Component({
       }
 
       if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
-        previewData[curIndex].disabled = false
-        // previewData[curIndex].scale = 1
-        // previewData[curIndex].x = 0
-        // previewData[curIndex].y = 0
         this.setData({
           previewData,
           scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
@@ -246,14 +217,9 @@ Component({
       }
 
       if (scrollLeft > 0) {
-        previewData[curIndex].disabled = false
-        // previewData[curIndex].scale = 1
-        // previewData[curIndex].x = 0
-        // previewData[curIndex].y = 0
         this.setData({
           scrollLeft: curIndex * transformRpx(750) - transformRpx(750),
-          // data,
-          previewData,
+
           itemIndex: itemIndex - 1,
           animation: false,
         })
@@ -312,8 +278,6 @@ Component({
     },
     touchmove(e) {
       const {pageX, pageY} = e.changedTouches[0]
-      // const {previewData} = this.data
-      // const {dataset} = e.currentTarget
 
       if (scale) {
         return false
@@ -331,8 +295,6 @@ Component({
         return false
       }
 
-      // const curIndex = dataset.index
-
       if (curItem.scale > 1) {
         const delta = transformRpx(750) + curItem.x
         if (delta > 20 && delta < transformRpx(750) - 20) {
@@ -348,13 +310,11 @@ Component({
         this.moveLeft(e)
       }
 
-
       moveStartX = pageX
       return true
     },
     moveLeft(e) {
       const {pageX} = e.touches[0]
-      const {dataset} = e.currentTarget
       const {scrollLeft, previewData} = this.data
 
       if (curItem.scale > 1) {
@@ -365,18 +325,15 @@ Component({
       }
 
       if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
-        previewData[dataset.index].disabled = true
         this.setData({
-          scrollLeft: scrollLeft + (moveStartX - pageX),
-          previewData,
+          scrollLeft: scrollLeft + (moveStartX - pageX)
         })
       }
       return true
     },
     moveRight(e) {
       const {pageX} = e.touches[0]
-      const {dataset} = e.currentTarget
-      const {scrollLeft, previewData} = this.data
+      const {scrollLeft} = this.data
 
       if (curItem.scale > 1) {
         const delta = transformRpx(750) + curItem.x
@@ -386,18 +343,14 @@ Component({
       }
 
       if (scrollLeft > 0) {
-        previewData[dataset.index].disabled = true
         this.setData({
-          scrollLeft: scrollLeft - (pageX - moveStartX),
-          previewData
+          scrollLeft: scrollLeft - (pageX - moveStartX)
         })
       }
       return true
     },
     onChange(e) {
       const {detail} = e
-      // move.x = detail.x
-      // move.y = detail.y
       curItem.x = detail.x
       curItem.y = detail.y
     },
@@ -437,17 +390,23 @@ Component({
       const scrollIndex = previewData.findIndex((value) => value.src === url)
 
       this.setData({
-        data,
         previewData,
         scrollLeft: scrollIndex * transformRpx(750),
         initScale: false,
         previewShow: true,
-        itemIndex: index + 1
+        itemIndex: index + 1,
       })
+
+      setTimeout(() => {
+        this.setData({
+          animation: true
+        })
+      }, 200)
     },
     close() {
       this.setData({
-        previewShow: false
+        previewShow: false,
+        animation: false
       })
     }
   }
