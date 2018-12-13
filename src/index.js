@@ -10,12 +10,14 @@ let startY = 0 // touch 事件起始 x 坐标
 let moveStartX = 0 // move 事件起始 x 坐标
 let scale = false // 是否缩放中
 const interval = [-2, -1, 0, 1, 2]
-let curScale = 1
-const move = {
-  x: 0,
-  y: 0
-}
+
 let moving = false
+
+const curItem = {
+  x: 0,
+  y: 0,
+  scale: 1
+}
 
 
 Component({
@@ -34,7 +36,9 @@ Component({
     previewData: [],
     animation: true, // 滚动动画
     curSrc: '',
-    lastTapTime: 0
+    lastTapTime: 0,
+    curIndex: 0,
+    initScale: false
   },
   ready() {
     const {list} = this.properties
@@ -76,9 +80,12 @@ Component({
     // 标记缩放
     onScale(e) {
       const {detail} = e
-      curScale = detail.scale
-      move.x = detail.x
-      move.y = detail.y
+      // curScale = detail.scale
+      // move.x = detail.x
+      // move.y = detail.y
+      curItem.scale = detail.scale
+      curItem.x = detail.x
+      curItem.y = detail.y
       scale = true
     },
     touchstart(e) {
@@ -112,9 +119,9 @@ Component({
           scale = false
         }, 1000)
         previewData[curIndex].disabled = false
-        previewData[curIndex].scale = curScale
-        previewData[curIndex].x = move.x
-        previewData[curIndex].y = move.y
+        // previewData[curIndex].scale = curScale
+        // previewData[curIndex].x = move.x
+        // previewData[curIndex].y = move.y
         this.setData({
           previewData
         })
@@ -122,20 +129,20 @@ Component({
         return false
       }
 
-      previewData[curIndex].x = move.x
-      previewData[curIndex].y = move.y
+      // previewData[curIndex].x = move.x
+      // previewData[curIndex].y = move.y
 
-      this.setData({
-        previewData
-      })
+      // this.setData({
+      //   previewData
+      // })
 
       if (!this.touchVerify(startX, startY, pageX, pageY)) {
         moving = false
         return false
       }
 
-      if (previewData[curIndex].scale > 1) {
-        const delta = transformRpx(750) + previewData[curIndex].x
+      if (curItem.scale > 1) {
+        const delta = transformRpx(750) + curItem.x
         if (delta > 20 && delta < transformRpx(750) - 20) {
           moving = false
           return false
@@ -165,8 +172,8 @@ Component({
     leftScroll(curIndex) {
       const {scrollLeft, data, previewData} = this.data
       const {itemIndex} = this.data
-      if (previewData[curIndex].scale > 1) {
-        const delta = transformRpx(750) + previewData[curIndex].x
+      if (curItem.scale > 1) {
+        const delta = transformRpx(750) + curItem.x
         if (delta > 0) {
           return false
         }
@@ -188,16 +195,22 @@ Component({
 
       if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
         previewData[curIndex].disabled = false
-        previewData[curIndex].scale = 1
-        previewData[curIndex].x = 0
-        previewData[curIndex].y = 0
+        // previewData[curIndex].scale = 1
+        // previewData[curIndex].x = 0
+        // previewData[curIndex].y = 0
         this.setData({
           previewData,
           scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
           // data,
           itemIndex: itemIndex + 1,
-          curIndex
+          // curIndex
         })
+
+        setTimeout(() => {
+          this.setData({
+            initScale: true
+          })
+        }, 500)
 
         // 临时处理最后一张图位置问题
         if (itemIndex >= data.length - 1) {
@@ -207,6 +220,10 @@ Component({
             })
           }, 500)
         }
+
+        curItem.scale = 0
+        curItem.x = 0
+        curItem.y = 0
       } else {
         this.setData({
           scrollLeft: curIndex * transformRpx(750),
@@ -220,8 +237,8 @@ Component({
     rightScroll(curIndex) {
       const {scrollLeft, data, previewData} = this.data
       const {itemIndex} = this.data
-      if (previewData[curIndex].scale > 1) {
-        const delta = transformRpx(750) + previewData[curIndex].x
+      if (curItem.scale > 1) {
+        const delta = transformRpx(750) + curItem.x
         if (delta < transformRpx(750)) {
           moving = false
           return false
@@ -230,9 +247,9 @@ Component({
 
       if (scrollLeft > 0) {
         previewData[curIndex].disabled = false
-        previewData[curIndex].scale = 1
-        previewData[curIndex].x = 0
-        previewData[curIndex].y = 0
+        // previewData[curIndex].scale = 1
+        // previewData[curIndex].x = 0
+        // previewData[curIndex].y = 0
         this.setData({
           scrollLeft: curIndex * transformRpx(750) - transformRpx(750),
           // data,
@@ -240,6 +257,16 @@ Component({
           itemIndex: itemIndex - 1,
           animation: false,
         })
+
+        setTimeout(() => {
+          this.setData({
+            initScale: true
+          })
+        }, 500)
+
+        curItem.scale = 0
+        curItem.x = 0
+        curItem.y = 0
 
         setTimeout(() => {
           if (previewData[curIndex - 1]) {
@@ -285,8 +312,8 @@ Component({
     },
     touchmove(e) {
       const {pageX, pageY} = e.changedTouches[0]
-      const {previewData} = this.data
-      const {dataset} = e.currentTarget
+      // const {previewData} = this.data
+      // const {dataset} = e.currentTarget
 
       if (scale) {
         return false
@@ -304,10 +331,10 @@ Component({
         return false
       }
 
-      const curIndex = dataset.index
+      // const curIndex = dataset.index
 
-      if (previewData[curIndex].scale > 1) {
-        const delta = transformRpx(750) + previewData[curIndex].x
+      if (curItem.scale > 1) {
+        const delta = transformRpx(750) + curItem.x
         if (delta > 20 && delta < transformRpx(750) - 20) {
           return false
         }
@@ -330,8 +357,8 @@ Component({
       const {dataset} = e.currentTarget
       const {scrollLeft, previewData} = this.data
 
-      if (previewData[dataset.index].scale > 1) {
-        const delta = transformRpx(750) + previewData[dataset.index].x
+      if (curItem.scale > 1) {
+        const delta = transformRpx(750) + curItem.x
         if (delta > 0) {
           return false
         }
@@ -351,8 +378,8 @@ Component({
       const {dataset} = e.currentTarget
       const {scrollLeft, previewData} = this.data
 
-      if (previewData[dataset.index].scale > 1) {
-        const delta = transformRpx(750) + previewData[dataset.index].x
+      if (curItem.scale > 1) {
+        const delta = transformRpx(750) + curItem.x
         if (delta < transformRpx(750)) {
           return false
         }
@@ -369,8 +396,10 @@ Component({
     },
     onChange(e) {
       const {detail} = e
-      move.x = detail.x
-      move.y = detail.y
+      // move.x = detail.x
+      // move.y = detail.y
+      curItem.x = detail.x
+      curItem.y = detail.y
     },
     scroll(e) {
       scrollTop = e.detail.scrollTop
@@ -411,6 +440,7 @@ Component({
         data,
         previewData,
         scrollLeft: scrollIndex * transformRpx(750),
+        initScale: false,
         previewShow: true,
         itemIndex: index + 1
       })

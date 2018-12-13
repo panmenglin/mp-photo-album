@@ -20,17 +20,20 @@
             <movable-view 
               bindchange="onChange" 
               bindscale="onScale" 
-              x="{{item.x}}"
-              y="{{item.y}}"
+              scale-value="{{initScale}}"
               direction="all" 
               scale  
               scale-min="1" 
               scale-max="4" 
-              scale-value="{{item.scale}}"
               animation="{{false}}"
               data-index="{{index}}"
-              disabled="{{item.disabled}}"
+              disabled="{{!initScale}}"
             >
+              <!-- scale-value="{{curIndex === index ? false : 1}}" -->
+
+              <!-- scale-value="{{item.scale}}" -->
+              <!-- x="{{item.x}}" -->
+              <!-- y="{{item.y}}" -->
               <!-- disabled="{{itemIndex !== item.index + 1 || item.disabled}}" -->
               <!-- <image wx:if="{{item.preview}}" src="{{item.previewSrc}}" lazy-load	mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/> -->
               <image src="{{curSrc || item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}" bindtap="doubleClick" data-time="{{lastTapTime}}" />
