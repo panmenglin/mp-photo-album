@@ -106,6 +106,7 @@ Component({
       const {pageX, pageY} = e.changedTouches[0]
       const {dataset} = e.currentTarget
       const curIndex = dataset.index
+      const {itemIndex} = this.data
       // const {translateX} = this.data
 
       if (scale) {
@@ -137,11 +138,11 @@ Component({
       // 左滑
         this.leftScroll(curIndex)
       } else {
-        // this.animation.translateX(_translateX).step()
-        // this.setData({
-        //   animationData: this.animation.export(),
-        // })
-        // moving = false
+        this.animation.translateX(-1 * itemIndex * transformRpx(750) + transformRpx(750)).step()
+        this.setData({
+          animationData: this.animation.export(),
+        })
+        moving = false
       }
 
       startX = 0
@@ -161,7 +162,7 @@ Component({
       }
 
       // if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
-      if (itemIndex < data.length - 1) {
+      if (itemIndex < data.length) {
         this.animation.translateX(-1 * itemIndex * transformRpx(750)).step()
 
         this.setData({
@@ -189,6 +190,12 @@ Component({
             // if (!insert) {
             //   previewData.push(data[itemIndex + 2])
             // }
+          } else {
+            const transformIndex = curIndex ? (curIndex - 1) % 3 : 2
+            const deltaX = previewData[transformIndex].translateX + 3 * transformRpx(750)
+            // previewData[transformIndex].translateX = deltaX
+            previewData[transformIndex] = data[0]
+            previewData[transformIndex].translateX = deltaX
           }
 
           this.setData({
@@ -255,10 +262,17 @@ Component({
             const deltaX = previewData[transformIndex].translateX - 3 * transformRpx(750)
             previewData[transformIndex] = data[itemIndex - 3]
             previewData[transformIndex].translateX = deltaX
+          } else {
+            const transformIndex = curIndex === 2 ? 0 : curIndex + 1
+
+            const deltaX = previewData[transformIndex].translateX - 3 * transformRpx(750)
+            previewData[transformIndex] = data[0]
+            previewData[transformIndex].translateX = deltaX
           }
 
           this.setData({
             previewData,
+            initScale: true
           })
 
           moving = false
@@ -342,6 +356,7 @@ Component({
         }
       }
 
+
       if (moveStartX < pageX) {
         // 右滑
         this.moveRight(e)
@@ -356,6 +371,7 @@ Component({
     moveLeft(e) {
       const {pageX} = e.touches[0]
       const {translateX} = this.data
+      const {itemIndex, data} = this.data
 
       if (curItem.scale > 1) {
         const delta = transformRpx(750) + curItem.x
@@ -366,18 +382,21 @@ Component({
 
       this.animation.translateX(translateX - (moveStartX - pageX)).step()
 
-      // if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
-      this.setData({
-        // scrollLeft: scrollLeft + (moveStartX - pageX)
-        animationData: this.animation.export(),
-        translateX: translateX - (moveStartX - pageX)
-      })
+      if (itemIndex < data.length) {
+        // if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
+        this.setData({
+          // scrollLeft: scrollLeft + (moveStartX - pageX)
+          animationData: this.animation.export(),
+          translateX: translateX - (moveStartX - pageX)
+        })
+      }
       // }
       return true
     },
     moveRight(e) {
       const {pageX} = e.touches[0]
       const {translateX} = this.data
+      const {itemIndex} = this.data
 
       if (curItem.scale > 1) {
         const delta = transformRpx(750) + curItem.x
@@ -388,14 +407,13 @@ Component({
 
       this.animation.translateX(translateX - (moveStartX - pageX)).step()
 
-
-      // if (scrollLeft > 0) {
-      this.setData({
-        // scrollLeft: scrollLeft - (pageX - moveStartX)
-        animationData: this.animation.export(),
-        translateX: translateX - (moveStartX - pageX)
-      })
-      // }
+      if (itemIndex > 1) {
+        this.setData({
+          // scrollLeft: scrollLeft - (pageX - moveStartX)
+          animationData: this.animation.export(),
+          translateX: translateX - (moveStartX - pageX)
+        })
+      }
       return true
     },
     // 记录移动位置
@@ -432,10 +450,18 @@ Component({
       const previewData = []
 
       interval.map(item => {
-        if (data[index + item]) {
+        // if (data[index + item]) {
+        if (index + item >= data.length) {
+          data[0].translateX = index * transformRpx(750) + item * transformRpx(750)
+          previewData.push(data[0])
+        } else if (index + item < 0) {
+          data[data.length - 1].translateX = index * transformRpx(750) + item * transformRpx(750)
+          previewData.push(data[data.length - 1])
+        } else {
           data[index + item].translateX = index * transformRpx(750) + item * transformRpx(750)
           previewData.push(data[index + item])
         }
+        // }
         return true
       })
 
