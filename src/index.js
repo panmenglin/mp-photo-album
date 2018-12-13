@@ -38,7 +38,7 @@ Component({
     curSrc: '',
     lastTapTime: 0,
     curIndex: 0,
-    initScale: false
+    initScale: true
   },
   ready() {
     const {list} = this.properties
@@ -117,8 +117,12 @@ Component({
       }
 
       if (curItem.scale > 1) {
-        const delta = transformRpx(750) + curItem.x
-        if (delta > 20 && delta < transformRpx(750) - 20) {
+        const delta = transformRpx(750) - transformRpx(750) * curItem.scale
+        // console.log(transformRpx(750) * curItem.scale)
+        // console.log(curItem.x)
+        // console.log(transformRpx(750))
+        // if (curItem.x >= delta && curItem.x <= 0) {
+        if (curItem.x > delta && curItem.x > 0) {
           moving = false
           return false
         }
@@ -147,9 +151,10 @@ Component({
     leftScroll(curIndex) {
       const {scrollLeft, data, previewData} = this.data
       const {itemIndex} = this.data
+
       if (curItem.scale > 1) {
-        const delta = transformRpx(750) + curItem.x
-        if (delta > 0) {
+        const delta = transformRpx(750) - transformRpx(750) * curItem.scale
+        if (curItem.x > delta + 20) {
           return false
         }
       }
@@ -209,11 +214,15 @@ Component({
       const {scrollLeft, data, previewData} = this.data
       const {itemIndex} = this.data
       if (curItem.scale > 1) {
-        const delta = transformRpx(750) + curItem.x
-        if (delta < transformRpx(750)) {
-          moving = false
+        // const delta = transformRpx(750) - transformRpx(750) * curItem.scale
+        if (curItem.x > 0) {
           return false
         }
+        // const delta = transformRpx(750) + curItem.x
+        // if (delta < transformRpx(750)) {
+        //   moving = false
+        //   return false
+        // }
       }
 
       if (scrollLeft > 0) {

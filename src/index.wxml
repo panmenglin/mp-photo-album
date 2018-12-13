@@ -15,7 +15,7 @@
   <scroll-view scroll-x scroll-left="{{scrollLeft}}" scroll-with-animation="{{animation}}">
     <view style="height:100%">
       <block wx:for="{{previewData}}" wx:key="{{item}}">
-        <view class="swiper-item" bindtouchstart="touchstart" bindtouchend="touchend" bindtouchmove="touchmove" data-index="{{index}}">
+        <view class="swiper-item" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}">
           <movable-area>
             <movable-view 
               bindchange="onChange" 
@@ -27,8 +27,9 @@
               scale-max="4" 
               animation="{{false}}"
               data-index="{{index}}"
-              disabled="{{!initScale}}"
             >
+              <!-- disabled="{{!initScale}}" -->
+
               <!-- scale-value="{{curIndex === index ? false : 1}}" -->
 
               <!-- scale-value="{{item.scale}}" -->
