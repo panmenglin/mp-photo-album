@@ -7,7 +7,7 @@ let startX = 0 // touch 事件起始 x 坐标
 let startY = 0 // touch 事件起始 x 坐标
 let moveStartX = 0 // move 事件起始 x 坐标
 let scale = false // 是否缩放中
-const interval = [-2, -1, 0, 1, 2] // 冗余
+const interval = [-1, 0, 1] // 冗余
 let moving = false // 移动中
 // 当前图片状态
 const curItem = {
@@ -15,6 +15,8 @@ const curItem = {
   y: 0,
   scale: 1
 }
+
+// let _translateX = 0
 
 Component({
   properties: {
@@ -27,12 +29,14 @@ Component({
     data: [],
     itemIndex: 1, // 大图预览计数
     scrollLeft: 0, // 预览图滚动距离
+    translateX: 0,
     previewData: [], // 预览内容
     animation: false, // 滚动动画
     curSrc: '', // 当前src
     lastTapTime: 0, // 记录双击时间
     curIndex: 0, // 当前 index
-    initScale: true // 是否重置缩放
+    initScale: true, // 是否重置缩放
+    animationData: {}
   },
   ready() {
     const {list} = this.properties
@@ -45,6 +49,12 @@ Component({
       data: list
     })
     this.changeItem()
+
+    const animation = wx.createAnimation({
+      duration: 200,
+      timingFunction: 'linear',
+    })
+    this.animation = animation
   },
   methods: {
     // 双击还原缩放
@@ -77,6 +87,8 @@ Component({
         startY = pageY
         moveStartX = pageX
         moving = true
+
+        // _translateX = translateX
       }
     },
     touchVerify(startX, startY, pageX, pageY) {
@@ -94,6 +106,7 @@ Component({
       const {pageX, pageY} = e.changedTouches[0]
       const {dataset} = e.currentTarget
       const curIndex = dataset.index
+      // const {translateX} = this.data
 
       if (scale) {
         setTimeout(() => {
@@ -124,12 +137,11 @@ Component({
       // 左滑
         this.leftScroll(curIndex)
       } else {
-        setTimeout(() => {
-          this.setData({
-            scrollLeft: curIndex * transformRpx(750),
-          })
-          moving = false
-        }, 500)
+        // this.animation.translateX(_translateX).step()
+        // this.setData({
+        //   animationData: this.animation.export(),
+        // })
+        // moving = false
       }
 
       startX = 0
@@ -138,7 +150,7 @@ Component({
     },
     // 左滑-显示下一张
     leftScroll(curIndex) {
-      const {scrollLeft, data, previewData} = this.data
+      const {data, previewData} = this.data
       const {itemIndex} = this.data
 
       if (curItem.scale > 1) {
@@ -148,26 +160,42 @@ Component({
         }
       }
 
-      if (data[itemIndex + 2]) {
-        let insert = false
-        previewData.map(item => {
-          if (item.src === data[itemIndex + 2].src) {
-            insert = true
-          }
-          return true
-        })
+      // if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
+      if (itemIndex < data.length - 1) {
+        this.animation.translateX(-1 * itemIndex * transformRpx(750)).step()
 
-        if (!insert) {
-          previewData.push(data[itemIndex + 2])
-        }
-      }
-
-      if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
         this.setData({
           previewData,
           scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
           itemIndex: itemIndex + 1,
+          animationData: this.animation.export(),
+          translateX: -1 * itemIndex * transformRpx(750)
         })
+
+        setTimeout(() => {
+          if (data[itemIndex + 2]) {
+            const transformIndex = curIndex ? (curIndex - 1) % 3 : 2
+            const deltaX = previewData[transformIndex].translateX + 3 * transformRpx(750)
+            // previewData[transformIndex].translateX = deltaX
+            previewData[transformIndex] = data[itemIndex + 2]
+            previewData[transformIndex].translateX = deltaX
+            // let insert = false
+            // previewData.map(item => {
+            //   if (item.src === data[itemIndex + 2].src) {
+            //     insert = true
+            //   }
+            //   return true
+            // })
+            // if (!insert) {
+            //   previewData.push(data[itemIndex + 2])
+            // }
+          }
+
+          this.setData({
+            previewData,
+            initScale: true
+          })
+        }, 200)
 
         setTimeout(() => {
           this.setData({
@@ -176,13 +204,13 @@ Component({
         }, 500)
 
         // 临时处理最后一张图位置问题
-        if (itemIndex >= data.length - 1) {
-          setTimeout(() => {
-            this.setData({
-              scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
-            })
-          }, 500)
-        }
+        // if (itemIndex >= data.length - 1) {
+        //   setTimeout(() => {
+        //     this.setData({
+        //       scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
+        //     })
+        //   }, 500)
+        // }
 
         curItem.scale = 0
         curItem.x = 0
@@ -198,7 +226,7 @@ Component({
     },
     // 右滑-显示上一张
     rightScroll(curIndex) {
-      const {scrollLeft, data, previewData} = this.data
+      const {previewData, data} = this.data
       const {itemIndex} = this.data
       if (curItem.scale > 1) {
         if (curItem.x > 0) {
@@ -206,60 +234,82 @@ Component({
         }
       }
 
-      if (scrollLeft > 0) {
+      // if (scrollLeft > 0) {
+      if (itemIndex > 0) {
+        // const lll = -1 * (curIndex * transformRpx(750)) + 2 * transformRpx(750)
+        // this.animation.translateX(translateX + transformRpx(750)).step()
+        this.animation.translateX(-1 * itemIndex * transformRpx(750) + 2 * transformRpx(750)).step()
+
         this.setData({
           scrollLeft: curIndex * transformRpx(750) - transformRpx(750),
-
+          animationData: this.animation.export(),
           itemIndex: itemIndex - 1,
           animation: false,
+          translateX: -1 * itemIndex * transformRpx(750) + 2 * transformRpx(750)
         })
 
         setTimeout(() => {
+          if (data[itemIndex - 3]) {
+            const transformIndex = curIndex === 2 ? 0 : curIndex + 1
+
+            const deltaX = previewData[transformIndex].translateX - 3 * transformRpx(750)
+            previewData[transformIndex] = data[itemIndex - 3]
+            previewData[transformIndex].translateX = deltaX
+          }
+
           this.setData({
-            initScale: true
+            previewData,
           })
-        }, 500)
 
-        curItem.scale = 0
-        curItem.x = 0
-        curItem.y = 0
-
-        setTimeout(() => {
-          if (previewData[curIndex - 1]) {
-            const curSrc = previewData[curIndex - 1].previewSrc
-            this.setData({
-              curSrc
-            })
-          }
-        }, 500)
-
-        setTimeout(() => {
-          if (this.data.curSrc) {
-            if (data[itemIndex - 4]) {
-              let insert = false
-              previewData.map(item => {
-                if (item.src === data[itemIndex - 4].src) {
-                  insert = true
-                }
-                return true
-              })
-
-              if (!insert) {
-                previewData.splice(0, 0, data[itemIndex - 4])
-                this.setData({
-                  previewData,
-                  scrollLeft: curIndex * transformRpx(750),
-                })
-              }
-            }
-
-            this.setData({
-              curSrc: '',
-              animation: true,
-            })
-          }
           moving = false
-        }, 700)
+        }, 200)
+
+        // setTimeout(() => {
+        //   this.setData({
+        //     initScale: true
+        //   })
+        // }, 500)
+
+        // curItem.scale = 0
+        // curItem.x = 0
+        // curItem.y = 0
+
+        // setTimeout(() => {
+        //   if (previewData[curIndex - 1]) {
+        //     const curSrc = previewData[curIndex - 1].previewSrc
+        //     this.setData({
+        //       curSrc
+        //     })
+        //   }
+        // }, 500)
+
+        // setTimeout(() => {
+        //   if (this.data.curSrc) {
+        //     // if (data[itemIndex - 4]) {
+        //     //   let insert = false
+        //     //   previewData.map(item => {
+        //     //     if (item.src === data[itemIndex - 4].src) {
+        //     //       insert = true
+        //     //     }
+        //     //     return true
+        //     //   })
+
+        //     //   if (!insert) {
+        //     //     previewData.splice(0, 0, data[itemIndex - 4])
+        //     //     this.setData({
+        //     //       previewData,
+        //     //       scrollLeft: curIndex * transformRpx(750),
+        //     //     })
+        //     //   }
+        //     // }
+
+        //     this.setData({
+        //       curSrc: '',
+        //       animation: true,
+        //     })
+        //   }
+        //   moving = false
+        // }, 700)
       } else {
         moving = false
       }
@@ -305,7 +355,7 @@ Component({
     },
     moveLeft(e) {
       const {pageX} = e.touches[0]
-      const {scrollLeft, previewData} = this.data
+      const {translateX} = this.data
 
       if (curItem.scale > 1) {
         const delta = transformRpx(750) + curItem.x
@@ -314,16 +364,20 @@ Component({
         }
       }
 
-      if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
-        this.setData({
-          scrollLeft: scrollLeft + (moveStartX - pageX)
-        })
-      }
+      this.animation.translateX(translateX - (moveStartX - pageX)).step()
+
+      // if (scrollLeft < (previewData.length - 1) * transformRpx(750)) {
+      this.setData({
+        // scrollLeft: scrollLeft + (moveStartX - pageX)
+        animationData: this.animation.export(),
+        translateX: translateX - (moveStartX - pageX)
+      })
+      // }
       return true
     },
     moveRight(e) {
       const {pageX} = e.touches[0]
-      const {scrollLeft} = this.data
+      const {translateX} = this.data
 
       if (curItem.scale > 1) {
         const delta = transformRpx(750) + curItem.x
@@ -332,11 +386,16 @@ Component({
         }
       }
 
-      if (scrollLeft > 0) {
-        this.setData({
-          scrollLeft: scrollLeft - (pageX - moveStartX)
-        })
-      }
+      this.animation.translateX(translateX - (moveStartX - pageX)).step()
+
+
+      // if (scrollLeft > 0) {
+      this.setData({
+        // scrollLeft: scrollLeft - (pageX - moveStartX)
+        animationData: this.animation.export(),
+        translateX: translateX - (moveStartX - pageX)
+      })
+      // }
       return true
     },
     // 记录移动位置
@@ -374,6 +433,7 @@ Component({
 
       interval.map(item => {
         if (data[index + item]) {
+          data[index + item].translateX = index * transformRpx(750) + item * transformRpx(750)
           previewData.push(data[index + item])
         }
         return true
@@ -381,8 +441,12 @@ Component({
 
       const scrollIndex = previewData.findIndex((value) => value.src === url)
 
+      this.animation.translateX(-1 * index * transformRpx(750)).step()
+
       this.setData({
         previewData,
+        animationData: this.animation.export(),
+        translateX: -1 * index * transformRpx(750),
         scrollLeft: scrollIndex * transformRpx(750),
         initScale: true,
         previewShow: true,

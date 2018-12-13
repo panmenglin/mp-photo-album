@@ -12,10 +12,10 @@
     <view class="count">{{itemIndex}}/{{data.length}}</view>
   </view>
 
-  <scroll-view scroll-x scroll-left="{{scrollLeft}}" scroll-with-animation="{{animation}}">
-    <view style="height:100%">
+  <!-- <scroll-view scroll-x scroll-left="{{scrollLeft}}" scroll-with-animation="{{animation}}"> -->
+    <view style="height:100%;" animation="{{animationData}}" class="scroll_photos">
       <block wx:for="{{previewData}}" wx:key="{{item}}">
-        <view class="swiper-item" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}">
+        <view class="swiper-item" style="transform: translate3d({{item.translateX}}px, 0px, 0px)" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}">
           <movable-area>
             <movable-view 
               bindchange="onChange" 
@@ -42,7 +42,7 @@
         </view>
       </block>
     </view>
-  </scroll-view>
+  <!-- </scroll-view> -->
  
   <view class="btn_group">
     <view>查看原图</view>

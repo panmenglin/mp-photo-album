@@ -96,7 +96,8 @@ scroll-view {
   height: 100%;
   width: 100%;
   white-space: nowrap;
-  display: inline-block;
-  position: relative;
   background: #000;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
