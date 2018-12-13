@@ -1,5 +1,3 @@
-
-
 const {transformRpx, debounce} = require('./utils.js')
 
 const imgHeight = transformRpx(248)
@@ -9,16 +7,14 @@ let startX = 0 // touch 事件起始 x 坐标
 let startY = 0 // touch 事件起始 x 坐标
 let moveStartX = 0 // move 事件起始 x 坐标
 let scale = false // 是否缩放中
-const interval = [-2, -1, 0, 1, 2]
-
-let moving = false
-
+const interval = [-2, -1, 0, 1, 2] // 冗余
+let moving = false // 移动中
+// 当前图片状态
 const curItem = {
   x: 0,
   y: 0,
   scale: 1
 }
-
 
 Component({
   properties: {
@@ -31,14 +27,12 @@ Component({
     data: [],
     itemIndex: 1, // 大图预览计数
     scrollLeft: 0, // 预览图滚动距离
-    x: 0,
-    y: 0,
-    previewData: [],
+    previewData: [], // 预览内容
     animation: false, // 滚动动画
-    curSrc: '',
-    lastTapTime: 0,
-    curIndex: 0,
-    initScale: true
+    curSrc: '', // 当前src
+    lastTapTime: 0, // 记录双击时间
+    curIndex: 0, // 当前 index
+    initScale: true // 是否重置缩放
   },
   ready() {
     const {list} = this.properties
@@ -98,7 +92,6 @@ Component({
     },
     touchend(e) {
       const {pageX, pageY} = e.changedTouches[0]
-      // const {previewData} = this.data
       const {dataset} = e.currentTarget
       const curIndex = dataset.index
 
@@ -118,10 +111,6 @@ Component({
 
       if (curItem.scale > 1) {
         const delta = transformRpx(750) - transformRpx(750) * curItem.scale
-        // console.log(transformRpx(750) * curItem.scale)
-        // console.log(curItem.x)
-        // console.log(transformRpx(750))
-        // if (curItem.x >= delta && curItem.x <= 0) {
         if (curItem.x > delta && curItem.x > 0) {
           moving = false
           return false
@@ -177,9 +166,7 @@ Component({
         this.setData({
           previewData,
           scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
-          // data,
           itemIndex: itemIndex + 1,
-          // curIndex
         })
 
         setTimeout(() => {
@@ -214,15 +201,9 @@ Component({
       const {scrollLeft, data, previewData} = this.data
       const {itemIndex} = this.data
       if (curItem.scale > 1) {
-        // const delta = transformRpx(750) - transformRpx(750) * curItem.scale
         if (curItem.x > 0) {
           return false
         }
-        // const delta = transformRpx(750) + curItem.x
-        // if (delta < transformRpx(750)) {
-        //   moving = false
-        //   return false
-        // }
       }
 
       if (scrollLeft > 0) {
@@ -358,11 +339,13 @@ Component({
       }
       return true
     },
+    // 记录移动位置
     onChange(e) {
       const {detail} = e
       curItem.x = detail.x
       curItem.y = detail.y
     },
+    // 照片墙滚动
     scroll(e) {
       scrollTop = e.detail.scrollTop
       this.changeItem()
@@ -382,13 +365,13 @@ Component({
         data
       })
     }, 500),
+    // 预览大图
     preview(e) {
       const {data} = this.data
       const {url} = e.currentTarget.dataset
-
       const index = data.findIndex((value) => value.src === url)
-
       const previewData = []
+
       interval.map(item => {
         if (data[index + item]) {
           previewData.push(data[index + item])
@@ -401,7 +384,7 @@ Component({
       this.setData({
         previewData,
         scrollLeft: scrollIndex * transformRpx(750),
-        initScale: false,
+        initScale: true,
         previewShow: true,
         itemIndex: index + 1,
       })
@@ -412,6 +395,7 @@ Component({
         })
       }, 200)
     },
+    // 关闭大图预览
     close() {
       this.setData({
         previewShow: false,

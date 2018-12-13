@@ -27,9 +27,8 @@
               scale-max="4" 
               animation="{{false}}"
               data-index="{{index}}"
+              disabled="{{!initScale}}"
             >
-              <!-- disabled="{{!initScale}}" -->
-
               <!-- scale-value="{{curIndex === index ? false : 1}}" -->
 
               <!-- scale-value="{{item.scale}}" -->
