@@ -16,13 +16,11 @@ scroll-view {
   height: 100%;
 }
 
-
 .swiper {
   height: 100vh;
   width: 100vw;
   position: fixed;
   top: 0;
-  /* padding: 100rpx 0 150rpx; */
   background: #000;
   box-sizing: border-box;
   white-space: nowrap;
@@ -37,6 +35,11 @@ scroll-view {
 .swiper movable-view, .swiper movable-area {
   height: 100%;
   width: 100%;
+}
+
+.swiper movable-view {
+  padding: 100rpx 0 150rpx;
+  box-sizing: border-box;
 }
 
 .swiper swiper {

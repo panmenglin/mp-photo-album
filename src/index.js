@@ -33,8 +33,8 @@ Component({
     y: 0,
     previewData: [],
     animation: true, // 滚动动画
-    translateX: 0,
-    curSrc: ''
+    curSrc: '',
+    lastTapTime: 0
   },
   ready() {
     const {list} = this.properties
@@ -49,6 +49,30 @@ Component({
     this.changeItem()
   },
   methods: {
+    doubleClick(e) {
+      const {timeStamp} = e
+      const {dataset} = e.currentTarget
+      const {previewData} = this.data
+
+      if (timeStamp - dataset.time > 0) {
+        if (timeStamp - dataset.time < 300) {
+          if (previewData[dataset.index].scale > 1) {
+            previewData[dataset.index].scale = 1
+            previewData[dataset.index].x = 0
+            previewData[dataset.index].y = 0
+          } else {
+            // previewData[dataset.index].scale = 2
+          }
+
+          this.setData({
+            previewData
+          })
+        }
+      }
+      this.setData({
+        lastTapTime: timeStamp
+      })
+    },
     // 标记缩放
     onScale(e) {
       const {detail} = e
@@ -137,6 +161,7 @@ Component({
       moveStartX = 0
       return true
     },
+    // 左滑-显示下一张
     leftScroll(curIndex) {
       const {scrollLeft, data, previewData} = this.data
       const {itemIndex} = this.data
@@ -173,6 +198,15 @@ Component({
           itemIndex: itemIndex + 1,
           curIndex
         })
+
+        // 临时处理最后一张图位置问题
+        if (itemIndex >= data.length - 1) {
+          setTimeout(() => {
+            this.setData({
+              scrollLeft: curIndex * transformRpx(750) + transformRpx(750),
+            })
+          }, 500)
+        }
       } else {
         this.setData({
           scrollLeft: curIndex * transformRpx(750),
@@ -182,6 +216,7 @@ Component({
       moving = false
       return true
     },
+    // 右滑-显示上一张
     rightScroll(curIndex) {
       const {scrollLeft, data, previewData} = this.data
       const {itemIndex} = this.data

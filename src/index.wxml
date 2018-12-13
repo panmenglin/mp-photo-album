@@ -13,9 +13,9 @@
   </view>
 
   <scroll-view scroll-x scroll-left="{{scrollLeft}}" scroll-with-animation="{{animation}}">
-    <view style="height:100%;transform: translateX({{translateX}}px)">
+    <view style="height:100%">
       <block wx:for="{{previewData}}" wx:key="{{item}}">
-        <view class="swiper-item" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}">
+        <view class="swiper-item" bindtouchstart="touchstart" bindtouchend="touchend" bindtouchmove="touchmove" data-index="{{index}}">
           <movable-area>
             <movable-view 
               bindchange="onChange" 
@@ -33,7 +33,7 @@
             >
               <!-- disabled="{{itemIndex !== item.index + 1 || item.disabled}}" -->
               <!-- <image wx:if="{{item.preview}}" src="{{item.previewSrc}}" lazy-load	mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/> -->
-              <image src="{{curSrc || item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/>
+              <image src="{{curSrc || item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}" bindtap="doubleClick" data-time="{{lastTapTime}}" />
             </movable-view>
           </movable-area>
         </view>
