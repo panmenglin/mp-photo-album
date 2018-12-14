@@ -26,6 +26,7 @@
               scale-min="1" 
               scale-max="4" 
               animation="{{false}}"
+              inertia="{{true}}"
               data-index="{{index}}"
               disabled="{{!initScale}}"
             >
