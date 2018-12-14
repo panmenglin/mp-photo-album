@@ -19,7 +19,14 @@ function debounce(method, time) {
   }
 }
 
+function sum(arr) {
+  return arr.reduce(function (prev, cur) {
+    return prev + cur
+  }, 0)
+}
+
 module.exports = {
   transformRpx,
   debounce,
+  sum
 }

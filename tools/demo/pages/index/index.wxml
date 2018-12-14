@@ -1,1 +1,1 @@
-<comp list="{{list}}"></comp>
+<comp list="{{list}}" option="download"></comp>

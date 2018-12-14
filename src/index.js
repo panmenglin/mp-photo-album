@@ -1,4 +1,4 @@
-const {transformRpx, debounce} = require('./utils.js')
+const {transformRpx, debounce, sum} = require('./utils.js')
 
 const imgHeight = transformRpx(248)
 
@@ -21,6 +21,10 @@ Component({
     list: {
       type: Array,
       value: []
+    },
+    option: {
+      type: String,
+      value: 'normal'
     }
   },
   data: {
@@ -356,9 +360,17 @@ Component({
     preview(e) {
       const {data} = this.data
       const {url} = e.currentTarget.dataset
+      const {type} = e.currentTarget.dataset
       const index = data.findIndex((value) => value.src === url)
       const previewData = []
 
+      if (type === 'download') {
+        data[index].check = !data[index].check
+        this.setData({
+          data
+        })
+        return false
+      }
 
       let _interval = interval
       if (index === data.length - 1) {
@@ -389,6 +401,8 @@ Component({
           animation: true
         })
       }, 200)
+
+      return true
     },
     // 关闭大图预览
     close() {
@@ -396,6 +410,54 @@ Component({
         previewShow: false,
         animation: false
       })
+    },
+    // 下载
+    download() {
+      const {data} = this.data
+      const downloadList = []
+      const progress = []
+      data.map(item => {
+        if (item.check) {
+          downloadList.push(item.src)
+          progress.push(0)
+        }
+        return true
+      })
+
+      downloadList.map((item, index) => {
+        wx.downloadFile({
+          url: item,
+          success(res) {
+            wx.saveImageToPhotosAlbum({
+              filePath: res.tempFilePath,
+              success() {
+              }
+            })
+          }
+        }).onProgressUpdate((res) => {
+          progress[index] = res.progress
+        })
+        return true
+      })
+
+      const progressTimer = setInterval(() => {
+        const all = downloadList.length * 100
+        const _progress = parseInt((sum(progress) / all) * 100, 10)
+        wx.showLoading({
+          title: `${_progress}%`,
+        })
+
+        if (_progress >= 100) {
+          clearInterval(progressTimer)
+          wx.hideLoading()
+
+          wx.showToast({
+            title: '保存成功',
+            icon: 'success',
+            duration: 1500
+          })
+        }
+      }, 200)
     }
   }
 })

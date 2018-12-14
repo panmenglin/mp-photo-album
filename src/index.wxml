@@ -1,9 +1,12 @@
 <view>
   <scroll-view scroll-y style="height: 500px;" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-    <view class="photo" wx:for="{{data}}" wx:key="{{item}}" bindtap="preview" data-url="{{item.src}}">
+    <view class="photo {{item.check && option === 'download' ? 'check' : ''}}" wx:for="{{data}}" wx:key="{{item}}" bindtap="preview" data-type="{{option}}" data-url="{{item.src}}">
       <image wx:if="{{item.show}}" src="{{item.listSrc}}" mode="aspectFill" />
     </view>
   </scroll-view>
+  <view class="list_option" wx:if="{{option === 'download'}}">
+    <view class="download" bindtap="download">下载</view>
+  </view>
 </view>
 
 <view class="swiper" wx:if="{{previewShow}}" >
