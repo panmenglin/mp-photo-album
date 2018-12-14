@@ -9,6 +9,7 @@ let moveStartX = 0 // move 事件起始 x 坐标
 let scale = false // 是否缩放中
 const interval = [-1, 0, 1] // 冗余
 let moving = false // 移动中
+
 // 当前图片状态
 const curItem = {
   x: 0,
@@ -365,6 +366,22 @@ Component({
       const previewData = []
 
       if (type === 'download') {
+        const downloadList = []
+        data.map(item => {
+          if (item.check) {
+            downloadList.push(item.src)
+          }
+          return true
+        })
+
+        if (downloadList.length >= 9) {
+          wx.showToast({
+            title: '最多只能同时选择 9 张照片~',
+            icon: 'none'
+          })
+          return false
+        }
+
         data[index].check = !data[index].check
         this.setData({
           data
@@ -424,40 +441,57 @@ Component({
         return true
       })
 
-      downloadList.map((item, index) => {
-        wx.downloadFile({
-          url: item,
-          success(res) {
-            wx.saveImageToPhotosAlbum({
-              filePath: res.tempFilePath,
-              success() {
+      wx.authorize({
+        scope: 'scope.writePhotosAlbum',
+        success: () => {
+          this.triggerEvent('finish')
+
+          downloadList.map((item, index) => {
+            wx.downloadFile({
+              url: item,
+              success(res) {
+                wx.saveImageToPhotosAlbum({
+                  filePath: res.tempFilePath,
+                  success() {
+                  }
+                })
               }
+            }).onProgressUpdate((res) => {
+              progress[index] = res.progress
             })
-          }
-        }).onProgressUpdate((res) => {
-          progress[index] = res.progress
-        })
-        return true
-      })
-
-      const progressTimer = setInterval(() => {
-        const all = downloadList.length * 100
-        const _progress = parseInt((sum(progress) / all) * 100, 10)
-        wx.showLoading({
-          title: `${_progress}%`,
-        })
-
-        if (_progress >= 100) {
-          clearInterval(progressTimer)
-          wx.hideLoading()
-
-          wx.showToast({
-            title: '保存成功',
-            icon: 'success',
-            duration: 1500
+            return true
           })
+
+          const progressTimer = setInterval(() => {
+            const all = downloadList.length * 100
+            const _progress = parseInt((sum(progress) / all) * 100, 10)
+            wx.showToast({
+              title: `下载中 ${_progress}%`,
+              icon: 'none'
+            })
+
+            if (_progress >= 100) {
+              clearInterval(progressTimer)
+
+              setTimeout(() => {
+                wx.showToast({
+                  title: '保存成功',
+                  icon: 'success',
+                  duration: 1500
+                })
+              }, 500)
+            }
+          }, 200)
+        },
+        fail() {
+          wx.showToast({
+            title: '请授权后,重新保存！',
+            icon: 'none',
+            duration: 2000
+          })
+          wx.openSetting({})
         }
-      }, 200)
+      })
     }
   }
 })
