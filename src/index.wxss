@@ -1,20 +1,4 @@
-scroll-view {
-  padding-left: 3rpx;
-}
-
-.photo {
-  width: 244rpx;
-  height: 244rpx;
-  background-image: linear-gradient(136deg, #eaeaea, #dcdcdc);
-  display: inline-block;
-  margin: 2rpx;
-  vertical-align: top;
-}
-
-.photo image {
-  width: 100%;
-  height: 100%;
-}
+/* 大图预览 */
 
 .swiper {
   height: 100vh;
@@ -26,11 +10,9 @@ scroll-view {
   white-space: nowrap;
 }
 
-.swiper scroll-view  {
+.scroll_photos {
   height: 100%;
 }
-
-.swiper scroll-view::-webkit-scrollbar { width: 0 !important }
 
 .swiper movable-view, .swiper movable-area {
   height: 100%;
@@ -42,15 +24,12 @@ scroll-view {
   box-sizing: border-box;
 }
 
-.swiper swiper {
-  height: 100%;
-  width: 100%;
-}
-
 .swiper image{
   width: 100%;
   height: 100%;
 }
+
+/* 操作 */
 
 .tool {
   position: absolute;
@@ -75,11 +54,14 @@ scroll-view {
 
 .btn_group {
   text-align: center;
-  margin-top: 50rpx;
   position: absolute;
   z-index: 2;
   bottom: 50rpx;
   width: 100%;
+}
+
+.btn_group.iphoneX {
+  bottom: 80rpx;
 }
 
 .btn_group view{
@@ -92,6 +74,8 @@ scroll-view {
   padding: 0 20rpx;
   margin: 0 40rpx;
 }
+
+/* 描述 */
 
 .desc {
   position:absolute;
@@ -117,11 +101,26 @@ scroll-view {
   top: 0;
 }
 
-.scroll_photos {
-  height: 100%;
+/* 照片墙 */
+
+scroll-view {
+  padding-left: 3rpx;
+  position: relative;
 }
 
-/* 照片墙 */
+.photo {
+  width: 244rpx;
+  height: 244rpx;
+  background: linear-gradient(136deg, #eaeaea, #dcdcdc);
+  display: inline-block;
+  margin: 2rpx;
+  vertical-align: top;
+}
+
+.photo image {
+  width: 100%;
+  height: 100%;
+}
 
 .bottom_msg {
   line-height: 34rpx;
@@ -131,7 +130,19 @@ scroll-view {
   text-align: center;
 }
 
+.empty_list {
+  line-height: 40rpx;
+  font-size: 28rpx;
+  text-align: center;
+  color: #999999;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  transform: translateY(-140rpx)
+}
+
 /* 操作 */
+
 .check {
   position: relative
 }

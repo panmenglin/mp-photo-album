@@ -4,13 +4,10 @@ const {
 
 const imgHeight = transformRpx(248)
 
-let scrollTop = 0 // 照片墙滚动高度
 let startX = 0 // touch 事件起始 x 坐标
 let startY = 0 // touch 事件起始 x 坐标
 let moveStartX = 0 // move 事件起始 x 坐标
-let scale = false // 是否缩放中
 const interval = [-1, 0, 1] // 冗余
-let moving = false // 移动中
 
 // 当前图片状态
 const curItem = {
@@ -36,20 +33,22 @@ Component({
     translateX: 0,
     previewData: [], // 预览内容
     moveAnimation: null, // 滚动动画
-    curSrc: '', // 当前src
     lastTapTime: 0, // 记录双击时间
     curIndex: 0, // 当前 index
     initScale: true, // 是否重置缩放
     animationData: {},
-    direction: 'all',
-    disabled: false
+    disabled: false,
+    model: ''
   },
   ready() {
+    // 加载列表
     const {list} = this.properties
     this.setData({
       data: list
     })
     this.changeItem()
+
+    this.scrollTop = 0 // 照片墙滚动高度
 
     const animation = wx.createAnimation({
       duration: 200,
@@ -62,7 +61,19 @@ Component({
     this.animation = animation
     this.moveAnimation = moveAnimation
 
+    wx.getSystemInfo({
+      success: (res) => {
+        const model = res.model.substring(0, res.model.indexOf('X')) + 'X'
+        if (model === 'iPhone X') {
+          this.setData({
+            model: 'iphoneX'
+          })
+        }
+      }
+    })
+
     watch(this, {
+      // option 变化重置照片选中状态
       option: (newVal) => {
         if (newVal === 'normal') {
           const {data} = this.data
@@ -93,23 +104,23 @@ Component({
         lastTapTime: timeStamp
       })
     },
-    // 标记缩放
-    onScale(e) {
-      const {detail} = e
-      curItem.scale = detail.scale
-      curItem.x = detail.x
-      curItem.y = detail.y
-      scale = true
-    },
     touchstart(e) {
-      if (e.touches.length === 1 && !moving) {
+      if (e.touches.length === 1 && !this.moving) {
         const {pageX, pageY} = e.touches[0]
         startX = pageX
         startY = pageY
         moveStartX = pageX
-        moving = true
+        this.moving = true
       }
     },
+    /**
+     * 校验 touch 类型
+     * @param {*} startX 起始位置 x
+     * @param {*} startY 起始位置 y
+     * @param {*} pageX 结束位置 x
+     * @param {*} pageY 结束位置 y
+     * @returns
+     */
     touchVerify(startX, startY, pageX, pageY) {
       if (!startX) {
         return false
@@ -125,47 +136,59 @@ Component({
       const {pageX, pageY} = e.changedTouches[0]
       const {dataset} = e.currentTarget
       const curIndex = dataset.index
-      const {itemIndex} = this.data
+      const {itemIndex, translateX} = this.data
 
-      if (scale) {
+      if (this.scale) {
         setTimeout(() => {
-          scale = false
+          this.scale = false
         }, 500)
 
-        moving = false
+        this.moving = false
         return false
       }
 
       if (!this.touchVerify(startX, startY, pageX, pageY)) {
-        moving = false
+        // 处理重复拖动
+        if (translateX % transformRpx(750) !== 0) {
+          this.animation.translateX(-1 * itemIndex * transformRpx(750) + transformRpx(750)).step()
+          this.setData({
+            animationData: this.animation.export(),
+          })
+        }
+
+        this.moving = false
         return false
       }
 
       const delta = transformRpx(750) - transformRpx(750) * curItem.scale
       if (curItem.x > delta + 15 && curItem.x < 0) {
-        moving = false
+        this.moving = false
         return false
       }
 
       if (startX < pageX && pageX - startX > 50) {
-      // 右滑
+        // 右滑-显示上一张
         this.rightScroll(curIndex)
       } else if (startX > pageX && startX - pageX > 50) {
-      // 左滑
+        // 左滑-显示下一张
         this.leftScroll(curIndex)
       } else {
         this.animation.translateX(-1 * itemIndex * transformRpx(750) + transformRpx(750)).step()
         this.setData({
           animationData: this.animation.export(),
         })
-        moving = false
+        this.moving = false
       }
 
       startX = 0
       moveStartX = 0
       return true
     },
-    // 左滑-显示下一张
+    /**
+     * 左滑-显示下一张
+     * @param {*} curIndex 当前 swiper-item 下标
+     * @returns
+     */
     leftScroll(curIndex) {
       const {data, previewData} = this.data
       const {itemIndex} = this.data
@@ -205,12 +228,18 @@ Component({
         curItem.scale = 0
         curItem.x = 0
         curItem.y = 0
+        this.moving = false
+      } else {
+        this.moving = false
       }
 
-      moving = false
       return true
     },
-    // 右滑-显示上一张
+    /**
+     * 右滑-显示上一张
+     * @param {*} curIndex 当前 swiper-item 下标
+     * @returns
+     */
     rightScroll(curIndex) {
       const {previewData, data} = this.data
       const {itemIndex} = this.data
@@ -237,24 +266,19 @@ Component({
               const deltaX = previewData[transformIndex].translateX - 3 * transformRpx(750)
               previewData[transformIndex] = data[itemIndex - 3]
               previewData[transformIndex].translateX = deltaX
-            } else {
-              const transformIndex = curIndex === 2 ? 0 : curIndex + 1
-
-              const deltaX = previewData[transformIndex].translateX - 3 * transformRpx(750)
-              previewData[transformIndex] = data[0]
-              previewData[transformIndex].translateX = deltaX
             }
           }
+
           this.setData({
             previewData,
             initScale: true,
             disabled: false
           })
 
-          moving = false
+          this.moving = false
         }, 200)
       } else {
-        moving = false
+        this.moving = false
       }
 
       return true
@@ -262,7 +286,7 @@ Component({
     touchmove(e) {
       const {pageX, pageY} = e.changedTouches[0]
 
-      if (scale) {
+      if (this.scale) {
         return false
       }
 
@@ -294,6 +318,11 @@ Component({
       moveStartX = pageX
       return true
     },
+    /**
+     * 向左滑动
+     * @param {*} e
+     * @returns
+     */
     moveLeft(e) {
       const {pageX} = e.touches[0]
       const {translateX} = this.data
@@ -312,9 +341,14 @@ Component({
           disabled: true
         })
       }
-      // }
+
       return true
     },
+    /**
+     * 向右滑动
+     * @param {*} e
+     * @returns
+     */
     moveRight(e) {
       const {pageX} = e.touches[0]
       const {translateX} = this.data
@@ -334,22 +368,40 @@ Component({
           disabled: true
         })
       }
+
       return true
     },
-    // 记录移动位置
+    /**
+     * 标记缩放
+     * @param {*} e
+     */
+    onScale(e) {
+      const {detail} = e
+      curItem.scale = detail.scale
+      curItem.x = detail.x
+      curItem.y = detail.y
+      this.scale = true
+    },
+    /**
+     * 记录移动位置
+     * @param {*} e
+     */
     onChange(e) {
       const {detail} = e
       curItem.x = detail.x
       curItem.y = detail.y
     },
-    // 照片墙滚动
+    /**
+     * 照片墙滚动
+     * @param {*} e
+     */
     scroll(e) {
-      scrollTop = e.detail.scrollTop
+      this.scrollTop = e.detail.scrollTop
       this.changeItem()
     },
     changeItem: debounce(function () {
       const {data} = this.data
-      const minConlum = (Math.floor(scrollTop / imgHeight) - 2) * 3
+      const minConlum = (Math.floor(this.scrollTop / imgHeight) - 2) * 3
       const maxConlum = minConlum + 8 * 3
       data.map((item, index) => {
         if (index >= minConlum && index < maxConlum) {
@@ -362,7 +414,11 @@ Component({
         data
       })
     }, 500),
-    // 预览大图
+    /**
+     * 预览大图
+     * @param {*} e
+     * @returns
+     */
     preview(e) {
       const {data} = this.data
       const {url} = e.currentTarget.dataset
@@ -379,7 +435,7 @@ Component({
           return true
         })
 
-        if (downloadList.length >= 9) {
+        if (downloadList.length >= 9 && !data[index].check) {
           wx.showToast({
             title: '最多只能同时选择 9 张照片~',
             icon: 'none'
@@ -426,14 +482,19 @@ Component({
 
       return true
     },
-    // 关闭大图预览
+    /**
+     * 关闭大图预览
+     */
     close() {
       this.setData({
         previewShow: false,
         animation: false
       })
     },
-    // 下载
+    /**
+     * 下载
+     * @returns
+     */
     download() {
       const {data} = this.data
       const downloadList = []

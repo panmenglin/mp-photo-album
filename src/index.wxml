@@ -3,7 +3,8 @@
     <view class="photo {{item.check && option === 'download' ? 'check' : ''}}" wx:for="{{data}}" wx:key="{{item}}" bindtap="preview" data-type="{{option}}" data-url="{{item.src}}">
       <image wx:if="{{item.show}}" src="{{item.listSrc}}" mode="aspectFill" />
     </view>
-    <view class="bottom_msg">没有更多了</view>
+    <view class="bottom_msg" wx:if="{{data.length > 0}}">没有更多了</view>
+    <view class="empty_list" wx:if="{{data.length === 0}}">暂无照片</view>
   </scroll-view>
   <view class="list_option" wx:if="{{option === 'download'}}">
     <view class="download" bindtap="download">下载</view>
@@ -33,7 +34,7 @@
             data-index="{{index}}"
             disabled="{{!initScale || disabled}}"
           >
-            <image src="{{curSrc || item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}" bindtap="doubleClick" data-time="{{lastTapTime}}" />
+            <image src="{{item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}" bindtap="doubleClick" data-time="{{lastTapTime}}" />
           </movable-view>
         </movable-area>
       </view>
@@ -44,7 +45,7 @@
     <text>{{data[itemIndex - 1].desc}}</text>
   </view>
  
-  <view class="btn_group">
+  <view class="btn_group {{model}}">
     <view>查看原图</view>
     <view>加入我的</view>
   </view>
