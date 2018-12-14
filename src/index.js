@@ -174,28 +174,30 @@ Component({
         })
 
         setTimeout(() => {
-          if (data[itemIndex + 2]) {
-            const transformIndex = curIndex ? (curIndex - 1) % 3 : 2
-            const deltaX = previewData[transformIndex].translateX + 3 * transformRpx(750)
-            // previewData[transformIndex].translateX = deltaX
-            previewData[transformIndex] = data[itemIndex + 2]
-            previewData[transformIndex].translateX = deltaX
-            // let insert = false
-            // previewData.map(item => {
-            //   if (item.src === data[itemIndex + 2].src) {
-            //     insert = true
-            //   }
-            //   return true
-            // })
-            // if (!insert) {
-            //   previewData.push(data[itemIndex + 2])
-            // }
-          } else {
-            const transformIndex = curIndex ? (curIndex - 1) % 3 : 2
-            const deltaX = previewData[transformIndex].translateX + 3 * transformRpx(750)
-            // previewData[transformIndex].translateX = deltaX
-            previewData[transformIndex] = data[0]
-            previewData[transformIndex].translateX = deltaX
+          if (itemIndex > 1) {
+            if (data[itemIndex + 2]) {
+              const transformIndex = curIndex ? (curIndex - 1) % 3 : 2
+              const deltaX = previewData[transformIndex].translateX + 3 * transformRpx(750)
+              // previewData[transformIndex].translateX = deltaX
+              previewData[transformIndex] = data[itemIndex + 2]
+              previewData[transformIndex].translateX = deltaX
+              // let insert = false
+              // previewData.map(item => {
+              //   if (item.src === data[itemIndex + 2].src) {
+              //     insert = true
+              //   }
+              //   return true
+              // })
+              // if (!insert) {
+              //   previewData.push(data[itemIndex + 2])
+              // }
+            } else {
+              const transformIndex = curIndex ? (curIndex - 1) % 3 : 2
+              const deltaX = previewData[transformIndex].translateX + 3 * transformRpx(750)
+              // previewData[transformIndex].translateX = deltaX
+              previewData[transformIndex] = data[0]
+              previewData[transformIndex].translateX = deltaX
+            }
           }
 
           this.setData({
@@ -242,7 +244,8 @@ Component({
       }
 
       // if (scrollLeft > 0) {
-      if (itemIndex > 0) {
+      console.log(itemIndex)
+      if (itemIndex > 1) {
         // const lll = -1 * (curIndex * transformRpx(750)) + 2 * transformRpx(750)
         // this.animation.translateX(translateX + transformRpx(750)).step()
         this.animation.translateX(-1 * itemIndex * transformRpx(750) + 2 * transformRpx(750)).step()
@@ -256,20 +259,20 @@ Component({
         })
 
         setTimeout(() => {
-          if (data[itemIndex - 3]) {
-            const transformIndex = curIndex === 2 ? 0 : curIndex + 1
+          if (itemIndex < data.length) {
+            if (data[itemIndex - 3]) {
+              const transformIndex = curIndex === 2 ? 0 : curIndex + 1
+              const deltaX = previewData[transformIndex].translateX - 3 * transformRpx(750)
+              previewData[transformIndex] = data[itemIndex - 3]
+              previewData[transformIndex].translateX = deltaX
+            } else {
+              const transformIndex = curIndex === 2 ? 0 : curIndex + 1
 
-            const deltaX = previewData[transformIndex].translateX - 3 * transformRpx(750)
-            previewData[transformIndex] = data[itemIndex - 3]
-            previewData[transformIndex].translateX = deltaX
-          } else {
-            const transformIndex = curIndex === 2 ? 0 : curIndex + 1
-
-            const deltaX = previewData[transformIndex].translateX - 3 * transformRpx(750)
-            previewData[transformIndex] = data[0]
-            previewData[transformIndex].translateX = deltaX
+              const deltaX = previewData[transformIndex].translateX - 3 * transformRpx(750)
+              previewData[transformIndex] = data[0]
+              previewData[transformIndex].translateX = deltaX
+            }
           }
-
           this.setData({
             previewData,
             initScale: true
@@ -449,18 +452,26 @@ Component({
       const index = data.findIndex((value) => value.src === url)
       const previewData = []
 
-      interval.map(item => {
+
+      let _interval = interval
+      if (index === data.length - 1) {
+        _interval = [-2, -1, 0]
+      } else if (index === 0) {
+        _interval = [0, 1, 2]
+      }
+
+      _interval.map(item => {
         // if (data[index + item]) {
-        if (index + item >= data.length) {
-          data[0].translateX = index * transformRpx(750) + item * transformRpx(750)
-          previewData.push(data[0])
-        } else if (index + item < 0) {
-          data[data.length - 1].translateX = index * transformRpx(750) + item * transformRpx(750)
-          previewData.push(data[data.length - 1])
-        } else {
-          data[index + item].translateX = index * transformRpx(750) + item * transformRpx(750)
-          previewData.push(data[index + item])
-        }
+        // if (index + item >= data.length) {
+        //   data[0].translateX = index * transformRpx(750) + item * transformRpx(750)
+        //   previewData.push(data[0])
+        // } else if (index + item < 0) {
+        //   data[data.length - 1].translateX = index * transformRpx(750) + item * transformRpx(750)
+        //   previewData.push(data[data.length - 1])
+        // } else {
+        data[index + item].translateX = index * transformRpx(750) + item * transformRpx(750)
+        previewData.push(data[index + item])
+        // }
         // }
         return true
       })
