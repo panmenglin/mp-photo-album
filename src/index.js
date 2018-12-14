@@ -1,4 +1,6 @@
-const {transformRpx, debounce, sum} = require('./utils.js')
+const {
+  transformRpx, debounce, sum, watch
+} = require('./utils.js')
 
 const imgHeight = transformRpx(248)
 
@@ -65,6 +67,24 @@ Component({
     })
     this.animation = animation
     this.moveAnimation = moveAnimation
+
+    watch(this, {
+      option: (newVal) => {
+        if (newVal === 'normal') {
+          const {data} = this.data
+          data.map(item => {
+            item.check = false
+            return true
+          })
+          this.setData({
+            data
+          })
+        }
+      }
+    })
+  },
+  attached() {
+    console.log(1)
   },
   methods: {
     // 双击还原缩放
@@ -441,6 +461,14 @@ Component({
         return true
       })
 
+      if (downloadList.length === 0) {
+        wx.showToast({
+          title: '请选择图片',
+          icon: 'none'
+        })
+        return false
+      }
+
       wx.authorize({
         scope: 'scope.writePhotosAlbum',
         success: () => {
@@ -465,8 +493,9 @@ Component({
           const progressTimer = setInterval(() => {
             const all = downloadList.length * 100
             const _progress = parseInt((sum(progress) / all) * 100, 10)
+            const _progressContent = _progress > 0 ? `下载中 ${_progress}%` : '下载中...'
             wx.showToast({
-              title: `下载中 ${_progress}%`,
+              title: _progressContent,
               icon: 'none'
             })
 
@@ -492,6 +521,8 @@ Component({
           wx.openSetting({})
         }
       })
+
+      return true
     }
   }
 })

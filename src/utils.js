@@ -25,8 +25,34 @@ function sum(arr) {
   }, 0)
 }
 
+function defineReactive(data, key, val, fn) {
+  Object.defineProperty(data, key, {
+    configurable: true,
+    enumerable: true,
+    get() {
+      return val
+    },
+    set(newVal) {
+      if (newVal === val) return
+      if (fn) {
+        fn(newVal)
+      }
+      val = newVal
+    },
+  })
+}
+
+function watch(ctx, obj) {
+  Object.keys(obj).forEach(key => {
+    defineReactive(ctx.properties, key, ctx.properties[key], (value) => {
+      obj[key].call(ctx, value)
+    })
+  })
+}
+
 module.exports = {
   transformRpx,
   debounce,
-  sum
+  sum,
+  watch
 }
