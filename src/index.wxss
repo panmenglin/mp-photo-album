@@ -76,7 +76,7 @@ scroll-view {
   text-align: center;
   margin-top: 50rpx;
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   bottom: 50rpx;
   width: 100%;
 }
@@ -92,6 +92,20 @@ scroll-view {
   margin: 0 40rpx;
 }
 
+.desc {
+  position:absolute;
+  z-index:1;
+  bottom:0;
+  width:100%;
+  padding:20rpx 66rpx 150rpx;
+  box-sizing:border-box;
+  font-size:28rpx;
+  color:#fff;
+  height:360rpx;
+  white-space:initial;
+  background:rgba(0, 0, 0, 0.6);
+}
+
 .swiper-item {
   height: 100%;
   width: 100%;
@@ -100,4 +114,8 @@ scroll-view {
   position: absolute;
   left: 0;
   top: 0;
+}
+
+.scroll_photos {
+  height: 100%;
 }

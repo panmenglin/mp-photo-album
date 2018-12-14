@@ -12,38 +12,32 @@
     <view class="count">{{itemIndex}}/{{data.length}}</view>
   </view>
 
-  <!-- <scroll-view scroll-x scroll-left="{{scrollLeft}}" scroll-with-animation="{{animation}}"> -->
-    <view style="height:100%;" animation="{{animationData}}" class="scroll_photos">
-      <block wx:for="{{previewData}}" wx:key="{{item}}">
-        <view class="swiper-item" style="transform: translate3d({{item.translateX}}px, 0px, 0px)" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}">
-          <movable-area>
-            <movable-view 
-              bindchange="onChange" 
-              bindscale="onScale" 
-              scale-value="{{initScale}}"
-              direction="all" 
-              scale  
-              scale-min="1" 
-              scale-max="4" 
-              animation="{{false}}"
-              inertia="{{true}}"
-              data-index="{{index}}"
-              disabled="{{!initScale}}"
-            >
-              <!-- scale-value="{{curIndex === index ? false : 1}}" -->
+  <view class="scroll_photos" animation="{{animationData}}" >
+    <block wx:for="{{previewData}}" wx:key="{{item}}">
+      <view class="swiper-item" style="transform: translate3d({{item.translateX}}px, 0px, 0px)" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}">
+        <movable-area>
+          <movable-view 
+            bindchange="onChange" 
+            bindscale="onScale" 
+            scale-value="{{initScale}}"
+            direction="all" 
+            scale  
+            scale-min="1" 
+            scale-max="4" 
+            inertia
+            data-index="{{index}}"
+            disabled="{{!initScale || disabled}}"
+          >
+            <image src="{{curSrc || item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}" bindtap="doubleClick" data-time="{{lastTapTime}}" />
+          </movable-view>
+        </movable-area>
+      </view>
+    </block>
+  </view>
 
-              <!-- scale-value="{{item.scale}}" -->
-              <!-- x="{{item.x}}" -->
-              <!-- y="{{item.y}}" -->
-              <!-- disabled="{{itemIndex !== item.index + 1 || item.disabled}}" -->
-              <!-- <image wx:if="{{item.preview}}" src="{{item.previewSrc}}" lazy-load	mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}"/> -->
-              <image src="{{curSrc || item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}" bindtap="doubleClick" data-time="{{lastTapTime}}" />
-            </movable-view>
-          </movable-area>
-        </view>
-      </block>
-    </view>
-  <!-- </scroll-view> -->
+  <view class="desc" wx:if="{{data[itemIndex - 1].desc}}">
+    <text>{{data[itemIndex - 1].desc}}</text>
+  </view>
  
   <view class="btn_group">
     <view>查看原图</view>
