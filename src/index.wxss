@@ -65,6 +65,7 @@ scroll-view {
 
 .tool .close {
   display: inline-block;
+  padding: 0 20rpx;
 }
 
 .tool .count {
@@ -121,6 +122,14 @@ scroll-view {
 }
 
 /* 照片墙 */
+
+.bottom_msg {
+  line-height: 34rpx;
+  font-size: 24rpx;
+  color: #999999;
+  padding: 52rpx 0 58rpx;
+  text-align: center;
+}
 
 /* 操作 */
 .check {

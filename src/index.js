@@ -35,7 +35,6 @@ Component({
     itemIndex: 1, // 大图预览计数
     translateX: 0,
     previewData: [], // 预览内容
-    animation: null, // 滚动动画
     moveAnimation: null, // 滚动动画
     curSrc: '', // 当前src
     lastTapTime: 0, // 记录双击时间
@@ -47,11 +46,6 @@ Component({
   },
   ready() {
     const {list} = this.properties
-    list.map((item, index) => {
-      item.index = index
-      item.scale = 1
-      return true
-    })
     this.setData({
       data: list
     })
@@ -82,9 +76,6 @@ Component({
         }
       }
     })
-  },
-  attached() {
-    console.log(1)
   },
   methods: {
     // 双击还原缩放
@@ -202,12 +193,6 @@ Component({
               previewData[transformIndex] = data[itemIndex + 1]
               previewData[transformIndex].translateX = deltaX
             }
-            // else {
-            //   const transformIndex = curIndex ? (curIndex - 1) % 3 : 2
-            //   const deltaX = previewData[transformIndex].translateX + 3 * transformRpx(750)
-            //   previewData[transformIndex] = data[0]
-            //   previewData[transformIndex].translateX = deltaX
-            // }
           }
 
           this.setData({
