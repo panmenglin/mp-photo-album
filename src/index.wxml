@@ -48,7 +48,7 @@
   </view>
  
   <view class="btn_group {{model}}">
-    <view>查看原图</view>
-    <view>加入我的</view>
+    <view bindtap="like">收藏</view>
+    <view bindtap="downloadCur">下载</view>
   </view>
 </view>

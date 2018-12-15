@@ -569,6 +569,50 @@ Component({
       })
 
       return true
+    },
+    /**
+     * 单图下载
+     */
+    downloadCur() {
+      const {itemIndex, data} = this.data
+      wx.authorize({
+        scope: 'scope.writePhotosAlbum',
+        success: () => {
+          this.triggerEvent('finish')
+
+          wx.downloadFile({
+            url: data[itemIndex - 1].src,
+            success(res) {
+              wx.saveImageToPhotosAlbum({
+                filePath: res.tempFilePath,
+                success() {
+                  wx.showToast({
+                    title: '下载成功~',
+                    duration: 1500
+                  })
+                }
+              })
+            }
+          })
+        },
+        fail() {
+          wx.showToast({
+            title: '请授权后,重新保存！',
+            icon: 'none',
+            duration: 2000
+          })
+          wx.openSetting({})
+        }
+      })
+    },
+    /**
+     * 收藏
+     */
+    like() {
+      const {itemIndex, data} = this.data
+      this.triggerEvent('like', {
+        img: data[itemIndex - 1]
+      })
     }
   }
 })

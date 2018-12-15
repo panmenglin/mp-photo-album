@@ -42,6 +42,8 @@
   line-height: 28rpx;
   z-index: 1;
   opacity: .8;
+  height: 68rpx;
+  margin-top: 20rpx;
 }
 
 .tool .close {
@@ -97,10 +99,10 @@
   padding:20rpx 66rpx 150rpx;
   box-sizing:border-box;
   font-size:28rpx;
-  color:#fff;
+  color:rgba(255, 255, 255, .8);
   height:360rpx;
   white-space:initial;
-  background:rgba(0, 0, 0, 0.6);
+  background:rgba(0, 0, 0, .6);
 }
 
 .swiper-item {

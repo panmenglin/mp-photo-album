@@ -17,5 +17,8 @@ Page({
       list,
       option: 'normal'
     })
+  },
+  like(e) {
+    console.log(e.detail.img)
   }
 })
