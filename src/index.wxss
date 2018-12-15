@@ -89,6 +89,10 @@
   border-right: 1px solid rgba(216, 216, 216, .2);
 }
 
+.btn_group view:last-child{
+  border: 0;
+}
+
 /* 描述 */
 
 .desc {
