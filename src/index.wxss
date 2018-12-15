@@ -38,13 +38,24 @@
   width:100%;
   padding: 20rpx 40rpx;
   box-sizing: border-box;
-  font-size: 28rpx;
+  font-size: 24rpx;
+  line-height: 28rpx;
   z-index: 1;
+  opacity: .8;
 }
 
 .tool .close {
   display: inline-block;
-  padding: 0 20rpx;
+  padding: 20rpx;
+  position: relative;
+  left: -20rpx;
+  top: -20rpx;
+  height: 28rpx;
+}
+
+.close image {
+  height: 24rpx;
+  width: 24rpx;
 }
 
 .tool .count {
@@ -66,13 +77,14 @@
 
 .btn_group view{
   display: inline-block;
-  line-height: 60rpx;
-  border-radius: 10rpx;
-  color: #fff;
-  font-size: 28rpx;
-  border: 1px solid #fff;
-  padding: 0 20rpx;
-  margin: 0 40rpx;
+  width: 50%;
+  line-height: 40rpx;
+  color: rgba(255, 255, 255, .8);
+  font-size: 24rpx;
+}
+
+.btn_group view{
+  border-right: 1px solid rgba(216, 216, 216, .2);
 }
 
 /* 描述 */

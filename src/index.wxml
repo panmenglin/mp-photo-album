@@ -13,7 +13,9 @@
 
 <view class="swiper" wx:if="{{previewShow}}" >
   <view class="tool">
-    <view class="close" bindtap="close">X</view>
+    <view class="close" bindtap="close">
+      <image src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEyIiB2aWV3Qm94PSIwIDAgMTIgMTIiIHdpZHRoPSIxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMS41IDEuNSA5IDltMC05LTkgOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjY2VjZWNlIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" />
+    </view>
     <view class="count">{{itemIndex}}/{{data.length}}</view>
   </view>
 
