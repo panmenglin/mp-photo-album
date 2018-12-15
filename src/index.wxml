@@ -1,5 +1,5 @@
-<view>
-  <scroll-view scroll-y style="height: 500px;" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+<view style="height:100%">
+  <scroll-view scroll-y style="height: 100%" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
     <view class="photo {{item.check && option === 'download' ? 'check' : ''}}" wx:for="{{data}}" wx:key="{{item}}" bindtap="preview" data-type="{{option}}" data-url="{{item.src}}">
       <image wx:if="{{item.show}}" src="{{item.listSrc}}" mode="aspectFill" />
     </view>
