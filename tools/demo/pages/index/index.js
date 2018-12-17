@@ -7,6 +7,14 @@ Page({
     list,
     option: ''
   },
+  onLoad() {
+    setTimeout(() => {
+      list.splice(0, 1)
+      this.setData({
+        list
+      })
+    }, 2000)
+  },
   select() {
     this.setData({
       option: 'download'

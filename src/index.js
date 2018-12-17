@@ -46,9 +46,8 @@ Component({
     this.setData({
       data: list
     })
-    this.changeItem()
 
-    this.scrollTop = 0 // 照片墙滚动高度
+    this.initAlbum()
 
     const animation = wx.createAnimation({
       duration: 200,
@@ -85,10 +84,20 @@ Component({
             data
           })
         }
+      },
+      list: (newVal) => {
+        this.setData({
+          data: newVal
+        })
+        this.initAlbum()
       }
     })
   },
   methods: {
+    initAlbum() {
+      this.changeItem()
+      this.scrollTop = 0 // 照片墙滚动高度
+    },
     // 双击还原缩放
     doubleClick(e) {
       const {timeStamp} = e
