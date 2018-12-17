@@ -46,9 +46,10 @@ Component({
   },
   ready() {
     // 加载列表
-    const {list} = this.properties
+    const {list, likeTitle} = this.properties
     this.setData({
-      data: list
+      data: list,
+      title: likeTitle
     })
 
     this.initAlbum()
@@ -596,11 +597,10 @@ Component({
      */
     downloadCur() {
       const {itemIndex, data} = this.data
+      let progress = 0
       wx.authorize({
         scope: 'scope.writePhotosAlbum',
         success: () => {
-          this.triggerEvent('finish')
-
           wx.downloadFile({
             url: data[itemIndex - 1].src,
             success(res) {
@@ -608,13 +608,35 @@ Component({
                 filePath: res.tempFilePath,
                 success() {
                   wx.showToast({
-                    title: '下载成功~',
+                    title: '下载成功',
                     duration: 1500
                   })
                 }
               })
             }
+          }).onProgressUpdate((res) => {
+            progress = res.progress
           })
+
+          const progressTimer = setInterval(() => {
+            const _progressContent = progress > 0 ? `下载中 ${progress}%` : '下载中...'
+            wx.showToast({
+              title: _progressContent,
+              icon: 'none'
+            })
+
+            if (progress >= 100) {
+              clearInterval(progressTimer)
+
+              setTimeout(() => {
+                wx.showToast({
+                  title: '保存成功',
+                  icon: 'success',
+                  duration: 1500
+                })
+              }, 500)
+            }
+          }, 200)
         },
         fail() {
           wx.showToast({
