@@ -97,7 +97,7 @@ Component({
       },
       likeTitle: (newVal) => {
         this.setData({
-          likeTitle: newVal
+          title: newVal
         })
       }
     })
@@ -510,6 +510,7 @@ Component({
         previewShow: false,
         animation: false
       })
+      this.triggerEvent('close')
     },
     /**
      * 下载

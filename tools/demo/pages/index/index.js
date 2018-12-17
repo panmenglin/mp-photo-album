@@ -21,6 +21,7 @@ Page({
     })
   },
   finish() {
+    console.log(123)
     this.setData({
       list,
       option: 'normal'

@@ -48,7 +48,7 @@
   </view>
  
   <view class="btn_group {{model}}">
-    <view bindtap="like" data-title="{{likeTitle}}">{{likeTitle}}</view>
+    <view bindtap="like" data-title="{{title}}">{{title}}</view>
     <view bindtap="downloadCur">下载</view>
   </view>
 </view>
