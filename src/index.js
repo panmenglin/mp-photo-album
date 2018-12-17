@@ -467,8 +467,10 @@ Component({
       }
 
       _interval.map(item => {
-        data[index + item].translateX = index * transformRpx(750) + item * transformRpx(750)
-        previewData.push(data[index + item])
+        if (data[index + item]) {
+          data[index + item].translateX = index * transformRpx(750) + item * transformRpx(750)
+          previewData.push(data[index + item])
+        }
         return true
       })
 
