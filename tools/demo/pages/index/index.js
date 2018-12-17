@@ -28,5 +28,6 @@ Page({
   },
   like(e) {
     console.log(e.detail.img)
+    console.log(e.detail.title)
   }
 })

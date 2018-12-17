@@ -25,6 +25,10 @@ Component({
     option: {
       type: String,
       value: 'normal'
+    },
+    likeTitle: {
+      type: String,
+      value: ''
     }
   },
   data: {
@@ -90,6 +94,11 @@ Component({
           data: newVal
         })
         this.initAlbum()
+      },
+      likeTitle: (newVal) => {
+        this.setData({
+          likeTitle: newVal
+        })
       }
     })
   },
@@ -619,10 +628,13 @@ Component({
     /**
      * 收藏
      */
-    like() {
+    like(e) {
       const {itemIndex, data} = this.data
+      const {dataset} = e.currentTarget
+
       this.triggerEvent('like', {
-        img: data[itemIndex - 1]
+        img: data[itemIndex - 1],
+        title: dataset.title
       })
     }
   }
