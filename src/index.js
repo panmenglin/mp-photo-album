@@ -107,6 +107,9 @@ Component({
     initAlbum() {
       this.changeItem()
       this.scrollTop = 0 // 照片墙滚动高度
+      this.setData({
+        scrollTop: 0
+      })
     },
     // 双击还原缩放
     doubleClick(e) {
