@@ -521,6 +521,9 @@ Component({
      * @returns
      */
     download() {
+      if (this.downloading) {
+        return false
+      }
       const {data} = this.data
       const downloadList = []
       const progress = []
@@ -544,7 +547,7 @@ Component({
         scope: 'scope.writePhotosAlbum',
         success: () => {
           this.triggerEvent('finish')
-
+          this.downloading = true
           downloadList.map((item, index) => {
             wx.downloadFile({
               url: item,
@@ -572,7 +575,7 @@ Component({
 
             if (_progress >= 100) {
               clearInterval(progressTimer)
-
+              this.downloading = false
               setTimeout(() => {
                 wx.showToast({
                   title: '保存成功',
@@ -583,7 +586,8 @@ Component({
             }
           }, 200)
         },
-        fail() {
+        fail: () => {
+          this.downloading = false
           wx.showToast({
             title: '请授权后,重新保存！',
             icon: 'none',
@@ -599,11 +603,16 @@ Component({
      * 单图下载
      */
     downloadCur() {
+      if (this.downloading) {
+        return false
+      }
+
       const {itemIndex, data} = this.data
       let progress = 0
       wx.authorize({
         scope: 'scope.writePhotosAlbum',
         success: () => {
+          this.downloading = true
           wx.downloadFile({
             url: data[itemIndex - 1].src,
             success(res) {
@@ -631,17 +640,19 @@ Component({
             if (progress >= 100) {
               clearInterval(progressTimer)
 
-              setTimeout(() => {
-                wx.showToast({
-                  title: '保存成功',
-                  icon: 'success',
-                  duration: 1500
-                })
-              }, 500)
+              this.downloading = false
+              // setTimeout(() => {
+              //   wx.showToast({
+              //     title: '保存成功',
+              //     icon: 'success',
+              //     duration: 1500
+              //   })
+              // }, 500)
             }
           }, 200)
         },
         fail() {
+          this.downloading = false
           wx.showToast({
             title: '请授权后,重新保存！',
             icon: 'none',
@@ -650,6 +661,7 @@ Component({
           wx.openSetting({})
         }
       })
+      return true
     },
     /**
      * 收藏
