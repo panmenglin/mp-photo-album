@@ -498,6 +498,8 @@ Component({
         itemIndex: index + 1,
       })
 
+      this.clickLike = false
+
       setTimeout(() => {
         this.setData({
           animation: true
@@ -514,7 +516,10 @@ Component({
         previewShow: false,
         animation: false
       })
-      this.triggerEvent('close')
+
+      this.triggerEvent('close', {
+        click: this.clickLike,
+      })
     },
     /**
      * 下载
@@ -674,6 +679,8 @@ Component({
         img: data[itemIndex - 1],
         title: dataset.title
       })
+
+      this.clickLike = true
     }
   }
 })
