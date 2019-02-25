@@ -560,6 +560,9 @@ Component({
                 wx.saveImageToPhotosAlbum({
                   filePath: res.tempFilePath,
                   success() {
+                    this.triggerEvent('download', {
+                      downloadList,
+                    })
                   }
                 })
               }
