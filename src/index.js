@@ -556,10 +556,10 @@ Component({
           downloadList.map((item, index) => {
             wx.downloadFile({
               url: item,
-              success(res) {
+              success: (res) => {
                 wx.saveImageToPhotosAlbum({
                   filePath: res.tempFilePath,
-                  success() {
+                  success: () => {
                     this.triggerEvent('download', {
                       downloadList,
                     })
@@ -623,13 +623,17 @@ Component({
           this.downloading = true
           wx.downloadFile({
             url: data[itemIndex - 1].src,
-            success(res) {
+            success: (res) => {
               wx.saveImageToPhotosAlbum({
                 filePath: res.tempFilePath,
-                success() {
+                success: () => {
                   wx.showToast({
                     title: '下载成功',
                     duration: 1500
+                  })
+
+                  this.triggerEvent('download', {
+                    downloadList: [data[itemIndex - 1].src]
                   })
                 }
               })
