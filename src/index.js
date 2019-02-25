@@ -559,11 +559,7 @@ Component({
               success: (res) => {
                 wx.saveImageToPhotosAlbum({
                   filePath: res.tempFilePath,
-                  success: () => {
-                    this.triggerEvent('download', {
-                      downloadList,
-                    })
-                  }
+                  success: () => {}
                 })
               }
             }).onProgressUpdate((res) => {
@@ -589,6 +585,10 @@ Component({
                   title: '保存成功',
                   icon: 'success',
                   duration: 1500
+                })
+
+                this.triggerEvent('download', {
+                  downloadList
                 })
               }, 500)
             }
