@@ -1,0 +1,58 @@
+<comp list="{{list}}" option="{{option}}" bindfinish="finish" bindlike="like" bindclose="finish" bindclickswiper="closeComment">
+    <view>
+        <view bindtap="toggleComment">评论</view>
+        <view>点赞</view>
+    </view>
+</comp>
+<view wx:if="{{option !== 'download'}}" bindtap="select">选择</view>
+<view wx:if="{{option === 'download'}}" bindtap="finish">完成</view>
+
+<!-- 评价 -->
+<view class="comment-view" animation="{{animationData}}">
+    <view class="comment-tag">
+        <view class="{{tab==='comment'?'active':''}}" bindtap="changeTab" data-tab="comment">回复<text>215</text></view>
+        <view class="{{tab==='like'?'active':''}}" bindtap="changeTab" data-tab="like">喜欢<text>192</text></view>
+    </view>
+    <scroll-view scroll-y wx:if="{{tab==='comment'}}">
+        <view class="comment-item">
+            <image class="comment-face" src="https://raw.githubusercontent.com/panmenglin/mp-photo-album/transform/common/images/Desert3_200.jpg" />
+            <view class="comment">
+                <view class="comment-user">JO<text>3分钟前</text></view>
+                <view class="comment-content">太逗了。哈哈哈哈 😂</view>
+            </view>
+        </view>
+        <view class="comment-item">
+            <image class="comment-face" src="https://raw.githubusercontent.com/panmenglin/mp-photo-album/transform/common/images/Desert3_200.jpg" />
+            <view class="comment">
+                <view class="comment-user">JO<text>3分钟前</text></view>
+                <view class="comment-content">太逗了。哈哈哈哈 😂</view>
+            </view>
+        </view>
+    </scroll-view>
+    <scroll-view scroll-y  wx:if="{{tab==='like'}}">
+        <view class="comment-item">
+            <image class="comment-face" src="https://raw.githubusercontent.com/panmenglin/mp-photo-album/transform/common/images/Desert3_200.jpg" />
+            <view class="like">
+                <view class="comment-user">JO<text>3分钟前</text></view>
+            </view>
+        </view>
+        <view class="comment-item">
+            <image class="comment-face" src="https://raw.githubusercontent.com/panmenglin/mp-photo-album/transform/common/images/Desert3_200.jpg" />
+            <view class="like">
+                <view class="comment-user">JO<text>3分钟前</text></view>
+            </view>
+        </view>
+        <view class="comment-item">
+            <image class="comment-face" src="https://raw.githubusercontent.com/panmenglin/mp-photo-album/transform/common/images/Desert3_200.jpg" />
+            <view class="like">
+                <view class="comment-user">JO<text>3分钟前</text></view>
+            </view>
+        </view>
+    </scroll-view>
+    <view class="sub-comment {{model}}">
+        <view>
+            <input type="text" cursor-spacing="{{12}}" placeholder="写评论"/>
+        </view>
+        <button>发布</button>
+    </view>
+</view>

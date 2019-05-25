@@ -16,6 +16,8 @@
 	"appid": "wx8f3c31131e2cc10d",
 	"projectname": "mp-photo-album",
 	"isGameTourist": false,
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,

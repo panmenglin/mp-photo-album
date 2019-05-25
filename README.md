@@ -34,7 +34,7 @@ npm install --save --production mp-photo-album
 ##### wxml
 
 ```html
-<comp list="{{list}}" bindlike="like" bindclose="finish" likeTitle="收藏"></comp>
+<mp-photo-album list="{{list}}" bindlike="like" bindclose="finish" likeTitle="收藏"></mp-photo-album>
 ```
 
 ##### 图片列表数据结构
@@ -73,7 +73,7 @@ bindclose
 ##### wxml
 
 ```html
-<comp list="{{list}}" option="{{option}}" bindfinish="finish"></comp>
+<mp-photo-album list="{{list}}" option="{{option}}" bindfinish="finish"></mp-photo-album>
 
 <view wx:if="{{option !== 'download'}}" bindtap="select">选择</view>
 <view wx:if="{{option === 'download'}}" bindtap="finish">完成</view>

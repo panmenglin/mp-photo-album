@@ -11,15 +11,15 @@
   </view>
 </view>
 
-<view class="swiper" wx:if="{{previewShow}}" >
-  <view class="tool">
+<view class="swiper" wx:if="{{previewShow}}">
+  <view class="tool" bindtap="clickSwiper">
     <view class="close" bindtap="close">
       <image src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEyIiB2aWV3Qm94PSIwIDAgMTIgMTIiIHdpZHRoPSIxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMS41IDEuNSA5IDltMC05LTkgOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjY2VjZWNlIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" />
     </view>
     <view class="count">{{itemIndex}}/{{data.length}}</view>
   </view>
 
-  <view class="scroll_photos" animation="{{animationData}}" >
+  <view class="scroll_photos" animation="{{animationData}}"  bindtap="clickSwiper">
     <block wx:for="{{previewData}}" wx:key="{{item}}">
       <view class="swiper-item" style="transform: translate3d({{item.translateX}}px, 0px, 0px)" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}">
         <movable-area>
@@ -47,8 +47,15 @@
     <text>{{data[itemIndex - 1].desc}}</text>
   </view>
  
-  <view class="btn_group {{model}}">
+  <view wx:if="{{title}}" class="btn_group {{model}}">
     <view bindtap="like" data-title="{{title}}">{{title}}</view>
     <view bindtap="downloadCur">下载</view>
   </view>
+
+  <view wx:if="{{!title}}" class="btn_group {{model}}">
+    <slot></slot>
+    <view bindtap="downloadCur">下载</view>
+  </view>
+
+  
 </view>

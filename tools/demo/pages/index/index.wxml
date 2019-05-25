@@ -1,3 +1,4 @@
-<comp list="{{list}}" option="{{option}}" bindfinish="finish" bindlike="like" bindclose="finish" likeTitle="收藏"></comp>
+<comp list="{{list}}" option="{{option}}" bindfinish="finish" bindlike="like" bindclose="finish" likeTitle="收藏" bindclickswiper="closeComment">
+</comp>
 <view wx:if="{{option !== 'download'}}" bindtap="select">选择</view>
 <view wx:if="{{option === 'download'}}" bindtap="finish">完成</view>

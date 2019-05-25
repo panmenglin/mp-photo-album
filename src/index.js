@@ -688,6 +688,12 @@ Component({
       })
 
       this.clickLike = true
+    },
+    /**
+     * 页面点击
+     */
+    clickSwiper() {
+      this.triggerEvent('clickswiper')
     }
   }
 })
