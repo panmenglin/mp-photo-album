@@ -506,6 +506,9 @@ Component({
         itemIndex: index + 1,
       })
 
+      this.triggerEvent('updateitem', {
+        curItem: data[index]
+      })
       this.clickLike = false
 
       setTimeout(() => {
