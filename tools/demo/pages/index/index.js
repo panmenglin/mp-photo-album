@@ -89,6 +89,6 @@ Page({
     console.log(e.detail.title)
   },
   updateItem(e) {
-    console.log(e.detail.curItem)
+    console.log(e.detail.curItem.src)
   }
 })

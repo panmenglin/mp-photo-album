@@ -362,11 +362,11 @@ Component({
           translateX: translateX - (moveStartX - pageX),
           disabled: true
         })
-      }
 
-      this.triggerEvent('updateitem', {
-        curItem: data[itemIndex]
-      })
+        this.triggerEvent('updateitem', {
+          curItem: data[itemIndex]
+        })
+      }
 
       return true
     },
@@ -393,11 +393,11 @@ Component({
           translateX: translateX - (moveStartX - pageX),
           disabled: true
         })
-      }
 
-      this.triggerEvent('updateitem', {
-        curItem: data[itemIndex]
-      })
+        this.triggerEvent('updateitem', {
+          curItem: data[itemIndex - 2]
+        })
+      }
 
       return true
     },
