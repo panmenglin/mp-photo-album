@@ -87,5 +87,8 @@ Page({
   like(e) {
     console.log(e.detail.img)
     console.log(e.detail.title)
+  },
+  updateItem(e) {
+    console.log(e.detail.curItem)
   }
 })

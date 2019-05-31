@@ -1,6 +1,6 @@
 {
   "pages": [
-    "pages/comment/index"
+    "pages/index/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

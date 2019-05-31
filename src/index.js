@@ -364,6 +364,10 @@ Component({
         })
       }
 
+      this.triggerEvent('updateitem', {
+        curItem: data[itemIndex]
+      })
+
       return true
     },
     /**
@@ -374,7 +378,7 @@ Component({
     moveRight(e) {
       const {pageX} = e.touches[0]
       const {translateX} = this.data
-      const {itemIndex} = this.data
+      const {itemIndex, data} = this.data
 
       if (curItem.scale > 1) {
         if (curItem.x < 0) {
@@ -390,6 +394,10 @@ Component({
           disabled: true
         })
       }
+
+      this.triggerEvent('updateitem', {
+        curItem: data[itemIndex]
+      })
 
       return true
     },
