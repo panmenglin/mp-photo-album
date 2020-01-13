@@ -1,7 +1,7 @@
 <view style="height:100%">
-  <scroll-view scroll-y style="height: 100%" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-    <view class="photo {{item.check && option === 'download' ? 'check' : ''}}" wx:for="{{data}}" wx:key="{{item}}" bindtap="preview" data-type="{{option}}" data-url="{{item.src}}">
-      <image wx:if="{{item.show}}" src="{{item.listSrc}}" mode="aspectFill" />
+  <scroll-view class="scroll_view" scroll-y style="height: 100%" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+    <view class="photo {{item.check && option === 'download' ? 'check' : ''}}" wx:for="{{data}}" wx:key="item" bindtap="preview" data-type="{{option}}" data-url="{{item.src}}">
+      <image class="img" wx:if="{{item.show}}" src="{{item.listSrc}}" mode="aspectFill" />
     </view>
     <view class="bottom_msg" wx:if="{{data.length > 0}}">没有更多了</view>
     <view class="empty_list" wx:if="{{data.length === 0}}">暂无照片</view>
@@ -14,16 +14,17 @@
 <view class="swiper" wx:if="{{previewShow}}">
   <view class="tool" bindtap="clickSwiper">
     <view class="close" bindtap="close">
-      <image src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEyIiB2aWV3Qm94PSIwIDAgMTIgMTIiIHdpZHRoPSIxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMS41IDEuNSA5IDltMC05LTkgOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjY2VjZWNlIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" />
+      <image class="img" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEyIiB2aWV3Qm94PSIwIDAgMTIgMTIiIHdpZHRoPSIxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMS41IDEuNSA5IDltMC05LTkgOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjY2VjZWNlIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" />
     </view>
     <view class="count">{{itemIndex}}/{{data.length}}</view>
   </view>
 
   <view class="scroll_photos" animation="{{animationData}}"  bindtap="clickSwiper">
-    <block wx:for="{{previewData}}" wx:key="{{item}}">
-      <view class="swiper-item" style="transform: translate3d({{item.translateX}}px, 0px, 0px)" catchtouchstart="touchstart" catchtouchend="touchend" catchtouchmove="touchmove" data-index="{{index}}">
-        <movable-area>
+    <block wx:for="{{previewData}}" wx:key="item">
+      <view class="swiper-item" style="transform: translate3d({{item.translateX}}px, 0px, 0px)" bindtouchstart="touchstart" bindtouchend="touchend" bindtouchmove="moveItem" data-index="{{index}}">
+        <movable-area class="movable_area">
           <movable-view 
+            class="movable_view"
             bindchange="onChange" 
             bindscale="onScale" 
             scale-value="{{initScale}}"
@@ -36,7 +37,7 @@
             data-index="{{index}}"
             disabled="{{!initScale || disabled}}"
           >
-            <image src="{{item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}" bindtap="doubleClick" data-time="{{lastTapTime}}" />
+            <image class="img" src="{{item.previewSrc}}" mode="aspectFit" data-url="{{item.src}}" data-index="{{index}}" bindtap="doubleClick" data-time="{{lastTapTime}}" />
           </movable-view>
         </movable-area>
       </view>
@@ -48,8 +49,8 @@
   </view>
  
   <view wx:if="{{title}}" class="btn_group {{model}}">
-    <view bindtap="like" data-title="{{title}}">{{title}}</view>
-    <view bindtap="downloadCur">下载</view>
+    <view class="btn_group_view" bindtap="like" data-title="{{title}}">{{title}}</view>
+    <view class="btn_group_view" bindtap="downloadCur">下载</view>
   </view>
 
   <view wx:if="{{!title}}" class="btn_group {{model}}">

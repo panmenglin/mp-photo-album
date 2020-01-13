@@ -19,6 +19,19 @@ function debounce(method, time) {
   }
 }
 
+// 节流
+function throttle(func, delay) {
+  let prev = Date.now()
+  return function (...args) {
+    const context = this
+    const now = Date.now()
+    if (now - prev >= delay) {
+      func.apply(context, ...args)
+      prev = Date.now()
+    }
+  }
+}
+
 function sum(arr) {
   return arr.reduce(function (prev, cur) {
     return prev + cur
@@ -53,6 +66,7 @@ function watch(ctx, obj) {
 module.exports = {
   transformRpx,
   debounce,
+  throttle,
   sum,
   watch
 }

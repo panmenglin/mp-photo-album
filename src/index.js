@@ -1,5 +1,5 @@
 const {
-  transformRpx, debounce, sum, watch
+  transformRpx, debounce, throttle, sum, watch
 } = require('./utils.js')
 
 const imgHeight = transformRpx(248)
@@ -34,7 +34,7 @@ Component({
   data: {
     data: [],
     itemIndex: 1, // 大图预览计数
-    translateX: 0,
+    // translateX: 0,
     previewData: [], // 预览内容
     moveAnimation: null, // 滚动动画
     lastTapTime: 0, // 记录双击时间
@@ -44,6 +44,7 @@ Component({
     disabled: false,
     model: ''
   },
+  translateX: 0,
   ready() {
     // 加载列表
     const {list, likeTitle} = this.properties
@@ -158,7 +159,8 @@ Component({
       const {pageX, pageY} = e.changedTouches[0]
       const {dataset} = e.currentTarget
       const curIndex = dataset.index
-      const {itemIndex, translateX} = this.data
+      const {itemIndex} = this.data
+      const {translateX} = this
 
       if (this.scale) {
         setTimeout(() => {
@@ -227,8 +229,9 @@ Component({
           previewData,
           itemIndex: itemIndex + 1,
           animationData: this.animation.export(),
-          translateX: -1 * itemIndex * transformRpx(750)
         })
+
+        this.translateX = -1 * itemIndex * transformRpx(750)
 
         setTimeout(() => {
           if (itemIndex > 1) {
@@ -278,8 +281,10 @@ Component({
           animationData: this.animation.export(),
           itemIndex: itemIndex - 1,
           animation: false,
-          translateX: -1 * itemIndex * transformRpx(750) + 2 * transformRpx(750)
         })
+
+        this.translateX = -1 * itemIndex * transformRpx(750) + 2 * transformRpx(750)
+
 
         setTimeout(() => {
           if (itemIndex < data.length) {
@@ -305,6 +310,13 @@ Component({
 
       return true
     },
+    moveItem(e) {
+      this.moveEvent = e
+      this.throttleTouchmove()
+    },
+    throttleTouchmove: throttle(function () {
+      this.touchmove(this.moveEvent)
+    }, 10),
     touchmove(e) {
       const {pageX, pageY} = e.changedTouches[0]
 
@@ -347,7 +359,7 @@ Component({
      */
     moveLeft(e) {
       const {pageX} = e.touches[0]
-      const {translateX} = this.data
+      const {translateX} = this
       const {itemIndex, data} = this.data
 
       const delta = transformRpx(750) - transformRpx(750) * curItem.scale
@@ -359,9 +371,11 @@ Component({
         this.moveAnimation.translateX(translateX - (moveStartX - pageX)).step()
         this.setData({
           animationData: this.moveAnimation.export(),
-          translateX: translateX - (moveStartX - pageX),
           disabled: true
         })
+
+        this.translateX = translateX - (moveStartX - pageX)
+
 
         this.triggerEvent('updateitem', {
           curItem: data[itemIndex]
@@ -377,7 +391,7 @@ Component({
      */
     moveRight(e) {
       const {pageX} = e.touches[0]
-      const {translateX} = this.data
+      const {translateX} = this
       const {itemIndex, data} = this.data
 
       if (curItem.scale > 1) {
@@ -390,9 +404,10 @@ Component({
         this.moveAnimation.translateX(translateX - (moveStartX - pageX)).step()
         this.setData({
           animationData: this.moveAnimation.export(),
-          translateX: translateX - (moveStartX - pageX),
           disabled: true
         })
+
+        this.translateX = translateX - (moveStartX - pageX)
 
         this.triggerEvent('updateitem', {
           curItem: data[itemIndex - 2]
@@ -500,11 +515,12 @@ Component({
       this.setData({
         previewData,
         animationData: this.animation.export(),
-        translateX: -1 * index * transformRpx(750),
         initScale: true,
         previewShow: true,
         itemIndex: index + 1,
       })
+
+      this.translateX = -1 * index * transformRpx(750)
 
       this.triggerEvent('updateitem', {
         curItem: data[index]
@@ -559,6 +575,20 @@ Component({
         return false
       }
 
+      const progressThrottle = throttle(() => {
+        const all = downloadList.length * 100
+        const _progress = parseInt((sum(progress) / all) * 100, 10)
+        const _progressContent = _progress > 0 ? `下载中 ${_progress}%` : '下载中...'
+        wx.showToast({
+          title: _progressContent,
+          icon: 'none'
+        })
+
+        if (progress >= 100) {
+          this.downloading = false
+        }
+      }, 100)
+
       wx.authorize({
         scope: 'scope.writePhotosAlbum',
         success: () => {
@@ -568,47 +598,47 @@ Component({
             wx.downloadFile({
               url: item,
               success: (res) => {
+                this.downloading = false
                 wx.saveImageToPhotosAlbum({
                   filePath: res.tempFilePath,
-                  success: () => {}
+                  success: () => {
+                    const all = downloadList.length * 100
+                    const _progress = parseInt((sum(progress) / all) * 100, 10)
+                    if (_progress >= 100) {
+                      setTimeout(() => {
+                        wx.showToast({
+                          title: '下载成功',
+                          icon: 'success',
+                          duration: 1500
+                        })
+                        this.triggerEvent('download', {
+                          downloadList
+                        })
+                      }, 500)
+                    }
+                  }
+                })
+              },
+              fail: (err) => {
+                this.downloading = false
+                const res = err && err.errMsg ? err.errMsg : '下载失败！'
+                wx.showToast({
+                  title: res,
+                  icon: 'none',
+                  duration: 2000
                 })
               }
             }).onProgressUpdate((res) => {
               progress[index] = res.progress
+              progressThrottle()
             })
             return true
           })
-
-          const progressTimer = setInterval(() => {
-            const all = downloadList.length * 100
-            const _progress = parseInt((sum(progress) / all) * 100, 10)
-            const _progressContent = _progress > 0 ? `下载中 ${_progress}%` : '下载中...'
-            wx.showToast({
-              title: _progressContent,
-              icon: 'none'
-            })
-
-            if (_progress >= 100) {
-              clearInterval(progressTimer)
-              this.downloading = false
-              setTimeout(() => {
-                wx.showToast({
-                  title: '保存成功',
-                  icon: 'success',
-                  duration: 1500
-                })
-
-                this.triggerEvent('download', {
-                  downloadList
-                })
-              }, 500)
-            }
-          }, 200)
         },
         fail: () => {
           this.downloading = false
           wx.showToast({
-            title: '请授权后,重新保存！',
+            title: '请授权后,重新下载！',
             icon: 'none',
             duration: 2000
           })
@@ -628,6 +658,19 @@ Component({
 
       const {itemIndex, data} = this.data
       let progress = 0
+
+      const progressThrottle = throttle(() => {
+        const _progressContent = progress > 0 ? `下载中 ${progress}%` : '下载中...'
+        wx.showToast({
+          title: _progressContent,
+          icon: 'none'
+        })
+
+        if (progress >= 100) {
+          this.downloading = false
+        }
+      }, 100)
+
       wx.authorize({
         scope: 'scope.writePhotosAlbum',
         success: () => {
@@ -635,6 +678,7 @@ Component({
           wx.downloadFile({
             url: data[itemIndex - 1].src,
             success: (res) => {
+              this.downloading = false
               wx.saveImageToPhotosAlbum({
                 filePath: res.tempFilePath,
                 success: () => {
@@ -648,31 +692,20 @@ Component({
                   })
                 }
               })
+            },
+            fail: (err) => {
+              this.downloading = false
+              const res = err && err.errMsg ? err.errMsg : '下载失败！'
+              wx.showToast({
+                title: res,
+                icon: 'none',
+                duration: 2000
+              })
             }
           }).onProgressUpdate((res) => {
             progress = res.progress
+            progressThrottle()
           })
-
-          const progressTimer = setInterval(() => {
-            const _progressContent = progress > 0 ? `下载中 ${progress}%` : '下载中...'
-            wx.showToast({
-              title: _progressContent,
-              icon: 'none'
-            })
-
-            if (progress >= 100) {
-              clearInterval(progressTimer)
-
-              this.downloading = false
-              // setTimeout(() => {
-              //   wx.showToast({
-              //     title: '保存成功',
-              //     icon: 'success',
-              //     duration: 1500
-              //   })
-              // }, 500)
-            }
-          }, 200)
         },
         fail() {
           this.downloading = false
