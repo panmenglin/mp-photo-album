@@ -1,6 +1,6 @@
 # mp-photo-album
 
-v1.2.0
+v1.2.4
 
 小程序照片墙/自定义大图预览/多图下载
 
@@ -26,11 +26,11 @@ npm install --save --production mp-photo-album
 
 #### 1. 照片列表/滚动加载
 
-<img src="./doc/album.png" width = "200" />
+<img src="https://raw.githubusercontent.com/panmenglin/mp-photo-album/transform/doc/album.png" width = "200" />
 
 #### 2. 大图预览/手势缩放/下载/自定义操作
 
-<img src="./doc/preview.png" width = "200" />
+<img src="https://raw.githubusercontent.com/panmenglin/mp-photo-album/transform/doc/preview.png" width = "200" />
 
 
 ##### wxml
@@ -70,7 +70,7 @@ bindclose
 
 选择多图，点击下载保存到相册，最多同时9张
 
-<img src="./doc/download.png" width = "200" />
+<img src="https://raw.githubusercontent.com/panmenglin/mp-photo-album/transform/doc/download.png" width = "200" />
 
 ##### wxml
 
@@ -91,4 +91,4 @@ option [默认] normal
 
 bindfinish
 
-点击下载的回调
+点击下载的回调
